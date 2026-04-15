@@ -11,10 +11,21 @@ def to_datetime(value) -> datetime:
     return parse(value)
 
 
-def to_west(value) -> str:
-    """MM/DD/YYYY — American/Western date format."""
+_WEST_EPOCH = None  # lazy init to avoid import-time date() call
+
+
+def _west_epoch():
+    global _WEST_EPOCH
+    if _WEST_EPOCH is None:
+        from datetime import date
+        _WEST_EPOCH = date(1899, 12, 30)
+    return _WEST_EPOCH
+
+
+def to_west(value) -> int:
+    """Excel serial date — days since 1899-12-30 (e.g. 45306 for 2024-01-15)."""
     from quando._parse import parse
-    return parse(value).strftime("%m/%d/%Y")
+    return (parse(value).date() - _west_epoch()).days
 
 
 def to_iso(value) -> str:

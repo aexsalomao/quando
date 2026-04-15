@@ -4,7 +4,7 @@
 - All inputs are auto-detected: string, datetime, int/float (Unix epoch), date
 - `cal=None` falls back to the global calendar set by `q.use()`
 - Default calendar is **NYSE** (logs a one-time notice if `q.use()` was never called)
-- "West" format = `MM/DD/YYYY`. ISO = `YYYY-MM-DDTHH:MM:SS+00:00`
+- "West" format = Excel serial integer (days since 1899-12-30). ISO = `YYYY-MM-DDTHH:MM:SS+00:00`
 - All returned datetimes are UTC-aware unless a timezone is explicitly attached
 
 ---
@@ -21,7 +21,7 @@
 |------|---------|
 | `q.to_timestamp(value)` | `float` — Unix epoch |
 | `q.to_datetime(value)` | `datetime` — UTC-aware |
-| `q.to_west(value)` | `str` — `MM/DD/YYYY` |
+| `q.to_west(value)` | `int` — Excel serial date (days since 1899-12-30, e.g. 45306) |
 | `q.to_iso(value)` | `str` — ISO 8601 |
 | `q.convert(value, to_fmt)` | any — `to_fmt` ∈ `"timestamp"`, `"datetime"`, `"west"`, `"iso"` |
 | `q.to_timestamps(values)` | `list[float]` |
