@@ -79,4 +79,6 @@ def remove_holiday(value, cal=None) -> None:
     cal_name = _norm(cal)
     d = parse(value).date()
     _CUSTOM_REMOVE.setdefault(cal_name, set()).add(d)
+    # Also scrub from custom additions so re-adding logic doesn't win
+    _CUSTOM_ADD.get(cal_name, {}).pop(d, None)
     _xcal_holidays.cache_clear()
