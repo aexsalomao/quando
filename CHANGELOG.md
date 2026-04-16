@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-04-16
+
 ### Added
 - `start_of_year()` / `end_of_year()` — first/last business day of the year
 - `start_of_week()` / `end_of_week()` — first/last business day of the ISO week
@@ -18,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Pre-commit hooks (`.pre-commit-config.yaml`)
 - GitHub Actions CI workflow (lint → format → test → coverage upload)
 - GitHub Actions docs workflow (MkDocs → GitHub Pages on push to master)
-- MkDocs documentation site (`mkdocs.yml`, `docs/`)
+- MkDocs documentation site with Material theme, feature grid, tabbed quick start, and GitHub Pages deployment
 - MIT `LICENSE` file
 - `CONTRIBUTING.md`
 - `example.py` — runnable walkthrough of all major API categories

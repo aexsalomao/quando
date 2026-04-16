@@ -1,95 +1,150 @@
+---
+hide:
+  - navigation
+  - toc
+---
+
+<div align="center" markdown>
+
 # quando
 
-> Navigate trading calendars, business days, and market periods — with zero fuss.
+**Navigate trading calendars, business days, and market periods — with zero fuss.**
 
-![Python](https://img.shields.io/badge/python-3.10+-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
-![Status](https://img.shields.io/badge/status-alpha-orange)
-[![CI](https://github.com/aexsalomao/quando/actions/workflows/ci.yml/badge.svg)](https://github.com/aexsalomao/quando/actions/workflows/ci.yml)
-
-**quando** is a lightweight library for business day arithmetic and market calendar utilities. It auto-detects any date input, resolves holidays via [exchange-calendars](https://github.com/ryanking13/exchange-calendars), and provides 52 methods covering everything from date conversion to settlement dates and rebalancing triggers.
-
----
-
-## Features
-
-- **52 methods** — conversion, timezone, validation, day checks, navigation, ranges, period boundaries, settlement, and expiry
-- **Auto-detecting inputs** — string (ISO, compact, US, slash), `datetime`, `date`, `int`/`float` (Unix epoch or Excel West serial)
-- **Exchange calendars** — NYSE, EUREX, LSE, TSX, ASX, HKEX, JPX, CME via `exchange-calendars`; any exchange code works
-- **Custom holidays** — add, remove, and persist overrides to JSON; merged transparently at query time
-- **Period boundaries** — month, quarter, year, and ISO week; always snaps to the nearest business day
-- **Rebalancing triggers** — `is_month_end()`, `is_quarter_end()`, `is_year_end()` for signal and rebalance logic
-- **Settlement & expiry** — `T+N` conventions, COB roll-back, and monthly/quarterly/weekly expiry dates
-- **Pluggable calendars** — load a custom JSON calendar file and set it as the active default with one call
-
----
-
-## Installation
+[![PyPI](https://img.shields.io/pypi/v/quando?color=blue)](https://pypi.org/project/quando/)
+[![Python](https://img.shields.io/pypi/pyversions/quando)](https://pypi.org/project/quando/)
+[![License](https://img.shields.io/github/license/aexsalomao/quando)](https://github.com/aexsalomao/quando/blob/master/LICENSE)
+[![CI](https://github.com/aexsalomao/quando/actions/workflows/ci.yml/badge.svg)](https://github.com/aexsalomao/quando/actions)
 
 ```bash
 pip install quando
 ```
 
-Or with [uv](https://github.com/astral-sh/uv):
-
-```bash
-uv add quando
-```
-
-For development:
-
-```bash
-git clone https://github.com/aexsalomao/quando
-cd quando
-uv sync --extra dev
-```
+</div>
 
 ---
 
-## Quick Start
+## Features
 
-```python
-import quando as q
+<div class="grid cards" markdown>
 
-q.use("NYSE")  # set global calendar (default if omitted)
+-   :material-calendar-check:{ .lg .middle } **52 methods, one import**
 
-# Parse anything
-q.to_datetime("20240115")             # datetime(2024, 1, 15, tzinfo=UTC)
-q.to_datetime(45306)                  # Excel West serial → 2024-01-15
-q.to_datetime(1705276800.0)           # Unix epoch
+    ---
 
-# Day checks
-q.is_business_day("2024-01-15")       # False — MLK Day
-q.is_holiday("2024-01-15")            # True
-q.is_weekend("2024-01-13")            # True
+    Conversions, timezone, validation, day checks, navigation, ranges, period boundaries, settlement, and expiry — all under `import quando as q`.
 
-# Navigation
-q.next_business_day("2024-12-24")     # Dec 26 (Christmas skip)
-q.add_business_days("2024-01-10", 5)  # Jan 17
+    [:octicons-arrow-right-24: API Reference](api.md)
 
-# Period boundaries
-q.start_of_month("2024-09-15")        # Sep 3 (Sep 1 is Sunday, Sep 2 is Labor Day)
-q.end_of_quarter("2024-01-15")        # Mar 28
-q.end_of_year("2024-06-01")           # Dec 31
+-   :material-auto-fix:{ .lg .middle } **Auto-detecting inputs**
 
-# Rebalancing triggers
-if q.is_month_end("2024-01-31"):
-    print("rebalance!")               # prints — Jan 31 is last NYSE trading day
+    ---
 
-# Date ranges & counting
-q.date_range("2024-01-01", "2024-01-31")          # list of 21 trading days
-q.trading_days_in_year(2024)                       # 252
-q.business_days_between("2024-01-01", "2024-01-31")  # 21
+    Pass a string, `datetime`, `date`, Unix epoch, or Excel West serial — quando figures it out. No manual parsing.
 
-# Settlement & expiry
-q.to_settlement_date("2024-06-10", "T+2")          # Jun 12
-q.next_expiry("2024-01-01", "monthly")             # Jan 19 (third Friday)
-q.days_to_expiry("2024-01-10", "2024-01-19")       # 6 business days
-```
+-   :material-earth:{ .lg .middle } **8 exchange calendars**
+
+    ---
+
+    NYSE, EUREX, LSE, TSX, ASX, HKEX, JPX, CME — or any `exchange-calendars` code. Switch with a single `q.use()` call.
+
+-   :material-calendar-edit:{ .lg .middle } **Custom holidays**
+
+    ---
+
+    Add or remove holidays, persist overrides to JSON, and load them back in any session. Merged transparently at query time.
+
+-   :material-repeat:{ .lg .middle } **Rebalancing triggers**
+
+    ---
+
+    `is_month_end()`, `is_quarter_end()`, `is_year_end()` — drop-in conditions for backtest rebalancing logic.
+
+-   :material-swap-horizontal:{ .lg .middle } **Settlement & expiry**
+
+    ---
+
+    `T+N` conventions, COB roll-back, and monthly/quarterly/weekly expiry dates for derivatives workflows.
+
+</div>
 
 ---
 
-## Supported Calendars
+## Quick start
+
+=== "Day checks"
+
+    ```python
+    import quando as q
+
+    q.use("NYSE")  # set global calendar (default: NYSE)
+
+    q.is_business_day("2024-01-15")   # False — MLK Day
+    q.is_holiday("2024-01-15")        # True
+    q.is_weekend("2024-01-13")        # True
+    q.day_of_week("2024-01-15")       # "Monday"
+    ```
+
+=== "Navigation"
+
+    ```python
+    import quando as q
+
+    q.next_business_day("2024-12-24")       # Dec 26 (Christmas skip)
+    q.prev_business_day("2024-01-01")       # Dec 29, 2023
+    q.add_business_days("2024-01-10", 5)    # Jan 17
+    q.snap("2024-01-13", "forward")         # Jan 16 (weekend + MLK)
+    ```
+
+=== "Period boundaries"
+
+    ```python
+    import quando as q
+
+    q.start_of_month("2024-09-15")     # Sep 3 (Sep 1 Sunday, Sep 2 Labor Day)
+    q.end_of_quarter("2024-01-15")     # Mar 28 (Mar 31 Sunday, Mar 29 Good Friday)
+    q.end_of_year("2024-06-01")        # Dec 31
+
+    # Rebalancing trigger
+    if q.is_month_end("2024-01-31"):
+        print("rebalance!")            # prints — Jan 31 is last NYSE trading day
+    ```
+
+=== "Settlement & expiry"
+
+    ```python
+    import quando as q
+
+    q.to_settlement_date("2024-06-10", "T+2")      # Jun 12
+    q.to_cob("2024-01-13")                         # Jan 12 (weekend → roll back)
+    q.next_expiry("2024-01-01", "monthly")          # Jan 19 (third Friday)
+    q.days_to_expiry("2024-01-10", "2024-01-19")   # 6 business days
+    ```
+
+=== "Custom calendars"
+
+    ```python
+    import quando as q
+
+    q.use("NYSE")
+    q.add_holiday("2024-07-05", "Independence Day (observed)")
+
+    # Persist to JSON
+    q.save_calendar("my_calendar.json")
+
+    # Load it back in another session
+    q.load_calendar("my_calendar.json")
+    ```
+
+<div align="center" markdown>
+
+[:octicons-arrow-right-24: Full API Reference](api.md){ .md-button .md-button--primary }
+[:octicons-arrow-right-24: Contributing](contributing.md){ .md-button }
+
+</div>
+
+---
+
+## Supported calendars
 
 | Alias | Exchange | Timezone |
 |---|---|---|
@@ -103,9 +158,3 @@ q.days_to_expiry("2024-01-10", "2024-01-19")       # 6 business days
 | `CME` | Chicago Mercantile Exchange | America/Chicago |
 
 Any `exchange-calendars` exchange code (e.g. `"XLON"`, `"XEUR"`) also works directly.
-
----
-
-## License
-
-MIT © [Antônio Salomão](https://github.com/aexsalomao)

@@ -1,5 +1,5 @@
 site_name: quando
-site_description: Time translation & holiday tracking for backtesting pipelines
+site_description: Navigate trading calendars, business days, and market periods — with zero fuss
 site_url: https://aexsalomao.github.io/quando
 repo_url: https://github.com/aexsalomao/quando
 repo_name: aexsalomao/quando
@@ -20,16 +20,51 @@ theme:
         icon: material/brightness-4
         name: Switch to light mode
   features:
+    - navigation.tabs
+    - navigation.instant
+    - navigation.tracking
     - navigation.sections
     - navigation.top
+    - toc.follow
+    - search.suggest
+    - search.highlight
     - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+
+extra_css:
+  - stylesheets/extra.css
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/aexsalomao/quando
+      name: GitHub
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/quando/
+      name: PyPI
+
+copyright: Copyright &copy; 2026 Antônio Salomão
+
+plugins:
+  - search
 
 markdown_extensions:
+  - attr_list
+  - md_in_html
   - pymdownx.highlight:
       anchor_linenums: true
   - pymdownx.superfences
   - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.snippets:
+      base_path: ["."]
   - admonition
+  - pymdownx.details
   - tables
 
 nav:

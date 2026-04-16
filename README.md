@@ -2,10 +2,11 @@
 
 > Navigate trading calendars, business days, and market periods — with zero fuss.
 
+[![PyPI](https://img.shields.io/pypi/v/quando?color=blue)](https://pypi.org/project/quando/)
 ![Python](https://img.shields.io/badge/python-3.10+-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![Status](https://img.shields.io/badge/status-alpha-orange)
 [![CI](https://github.com/aexsalomao/quando/actions/workflows/ci.yml/badge.svg)](https://github.com/aexsalomao/quando/actions/workflows/ci.yml)
+[![Docs](https://img.shields.io/badge/docs-aexsalomao.github.io%2Fquando-blue)](https://aexsalomao.github.io/quando)
 
 **quando** is a lightweight library for business day arithmetic and market calendar utilities. It auto-detects any date input, resolves holidays via [exchange-calendars](https://github.com/ryanking13/exchange-calendars), and provides 52 methods covering everything from date conversion to settlement dates and rebalancing triggers.
 
@@ -86,12 +87,6 @@ q.business_days_between("2024-01-01", "2024-01-31")  # 21
 q.to_settlement_date("2024-06-10", "T+2")  # Jun 12
 q.next_expiry("2024-01-01", "monthly")     # Jan 19 (third Friday)
 q.days_to_expiry("2024-01-10", "2024-01-19")  # 6 business days
-```
-
-Run the full walkthrough:
-
-```bash
-python example.py
 ```
 
 ---
