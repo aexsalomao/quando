@@ -73,10 +73,8 @@ class TestToday:
         assert q.today().tzinfo is not None
 
     def test_nyse_timezone_is_eastern(self):
-        import pytz
         q.use("NYSE")
         tz = q.today().tzinfo
-        # America/New_York resolves to either EST or EDT
         assert "America/New_York" in str(tz) or "EST" in str(tz) or "EDT" in str(tz)
 
     def test_time_is_midnight(self):
@@ -84,10 +82,10 @@ class TestToday:
         assert t.hour == 0 and t.minute == 0 and t.second == 0
 
     def test_date_is_today(self):
-        import pytz
         from datetime import datetime as dt
+        from zoneinfo import ZoneInfo
         q.use("NYSE")
-        today_eastern = dt.now(pytz.timezone("America/New_York")).date()
+        today_eastern = dt.now(ZoneInfo("America/New_York")).date()
         assert q.today().date() == today_eastern
 
     def test_respects_cal_arg(self):

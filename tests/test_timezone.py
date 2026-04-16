@@ -1,7 +1,7 @@
 """Tests for shift_tz, localize, strip_tz."""
 from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 import pytest
-import pytz
 import quando as q
 
 UTC = timezone.utc
@@ -79,8 +79,7 @@ class TestStripTz:
 
     def test_returns_utc_equivalent_time(self):
         # 2024-01-15 01:00 Berlin == 2024-01-15 00:00 UTC
-        berlin_tz = pytz.timezone("Europe/Berlin")
-        dt_berlin = berlin_tz.localize(datetime(2024, 1, 15, 1, 0))
+        dt_berlin = datetime(2024, 1, 15, 1, 0, tzinfo=ZoneInfo("Europe/Berlin"))
         result = q.strip_tz(dt_berlin)
         assert result.hour == 0   # stripped to UTC midnight
         assert result.tzinfo is None

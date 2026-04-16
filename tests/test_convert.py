@@ -76,9 +76,8 @@ class TestToDatetime:
         assert result.tzinfo is not None
 
     def test_aware_input_preserves_tz(self):
-        import pytz
-        eastern = pytz.timezone("America/New_York")
-        dt_eastern = eastern.localize(datetime(2024, 1, 15, 9, 30))
+        from zoneinfo import ZoneInfo
+        dt_eastern = datetime(2024, 1, 15, 9, 30, tzinfo=ZoneInfo("America/New_York"))
         result = q.to_datetime(dt_eastern)
         assert result.date() == date(2024, 1, 15)
 
