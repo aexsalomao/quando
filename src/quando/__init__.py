@@ -8,8 +8,7 @@ quando — time translation & holiday tracking for backtesting pipelines
     q.next_business_day("2024-12-24")
 """
 from datetime import datetime
-
-import pytz
+from zoneinfo import ZoneInfo
 
 from quando._state import use, verbose, as_of, get_tz
 
@@ -78,7 +77,7 @@ from quando._io import load_calendar, save_calendar
 
 def today(cal=None) -> datetime:
     """Today as a timezone-aware datetime in the active calendar's exchange timezone."""
-    tz = pytz.timezone(get_tz(cal))
+    tz = ZoneInfo(get_tz(cal))
     now = datetime.now(tz=tz)
     return now.replace(hour=0, minute=0, second=0, microsecond=0)
 
