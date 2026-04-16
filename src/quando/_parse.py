@@ -46,9 +46,8 @@ def _parse_string(s: str) -> datetime:
         except ValueError:
             pass
     try:
-        import dateutil.parser
-        dt = dateutil.parser.parse(s)
+        dt = datetime.fromisoformat(s)
         return dt if dt.tzinfo else dt.replace(tzinfo=UTC)
-    except Exception:
+    except ValueError:
         pass
     raise ValueError(f"quando: cannot parse date string '{s}'")

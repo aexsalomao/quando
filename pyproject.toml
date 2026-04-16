@@ -12,8 +12,6 @@ license = { text = "MIT" }
 keywords = ["finance", "calendar", "trading", "datetime", "backtesting"]
 dependencies = [
     "exchange-calendars>=4.0",
-    "python-dateutil>=2.8",
-    "pytz>=2023.3",
 ]
 
 [project.optional-dependencies]

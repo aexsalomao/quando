@@ -193,18 +193,10 @@ class TestSlashFormatOrdering:
         assert result.day == 15
 
 
-# ── dateutil fallback ─────────────────────────────────────────────────────────
+# ── fromisoformat fallback ────────────────────────────────────────────────────
 
-class TestDateutilFallback:
-    """Strings that none of the strptime formats match fall through to dateutil."""
-
-    def test_natural_language_date(self):
-        result = _parse_string("January 15, 2024")
-        assert result.date() == _ANCHOR_DATE
-
-    def test_natural_language_result_is_utc_aware(self):
-        result = _parse_string("January 15, 2024")
-        assert result.tzinfo is not None
+class TestFromisoformatFallback:
+    """Strings with timezone offsets (e.g. +00:00) fall through to fromisoformat."""
 
     def test_unrecognised_string_raises_value_error(self):
         with pytest.raises(ValueError, match="quando"):

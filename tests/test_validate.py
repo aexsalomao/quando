@@ -11,7 +11,6 @@ class TestIsValid:
         "2024-01-15",
         "20240115",
         "01/15/2024",
-        "January 15, 2024",
         datetime(2024, 1, 15),
         datetime(2024, 1, 15, tzinfo=UTC),
         date(2024, 1, 15),

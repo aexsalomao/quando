@@ -1,19 +1,18 @@
 from datetime import datetime, timezone
-
-import pytz
+from zoneinfo import ZoneInfo
 
 from quando._parse import parse
 
 
 def shift_tz(value, tz: str) -> datetime:
     """Convert datetime to a different timezone."""
-    return parse(value).astimezone(pytz.timezone(tz))
+    return parse(value).astimezone(ZoneInfo(tz))
 
 
 def localize(value, tz: str) -> datetime:
     """Attach a timezone to a naive datetime without shifting the clock."""
     dt = parse(value).replace(tzinfo=None)
-    return pytz.timezone(tz).localize(dt)
+    return dt.replace(tzinfo=ZoneInfo(tz))
 
 
 def strip_tz(value) -> datetime:
