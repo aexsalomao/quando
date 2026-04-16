@@ -1,6 +1,7 @@
 """Tests for q.use / q.verbose / q.as_of / q.today."""
-from datetime import datetime, date, timezone
-import pytest
+
+from datetime import date, datetime, timezone
+
 import quando as q
 import quando._state as _state
 
@@ -56,7 +57,7 @@ class TestAsOf:
         assert _state.get_as_of().date() == date(2024, 6, 15)
 
     def test_accepts_unix_timestamp(self):
-        q.as_of(1705276800)   # 2024-01-15
+        q.as_of(1705276800)  # 2024-01-15
         assert _state.get_as_of().date() == date(2024, 1, 15)
 
     def test_overwrite(self):
@@ -84,6 +85,7 @@ class TestToday:
     def test_date_is_today(self):
         from datetime import datetime as dt
         from zoneinfo import ZoneInfo
+
         q.use("NYSE")
         today_eastern = dt.now(ZoneInfo("America/New_York")).date()
         assert q.today().date() == today_eastern

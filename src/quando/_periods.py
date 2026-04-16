@@ -1,9 +1,9 @@
-from datetime import datetime, timedelta, timezone
 import calendar as _cal_mod
+from datetime import datetime, timedelta, timezone
 
-from quando._parse import parse, DateLike
 from quando._checks import is_business_day
 from quando._navigate import next_business_day, prev_business_day
+from quando._parse import DateLike, parse
 
 
 def start_of_month(value: DateLike, cal: str | None = None) -> datetime:
@@ -49,9 +49,7 @@ def end_of_year(value: DateLike, cal: str | None = None) -> datetime:
 def start_of_week(value: DateLike, cal: str | None = None) -> datetime:
     """First business day of the ISO week (Mon–Fri) containing value."""
     dt = parse(value)
-    monday = (dt - timedelta(days=dt.weekday())).replace(
-        hour=0, minute=0, second=0, microsecond=0
-    )
+    monday = (dt - timedelta(days=dt.weekday())).replace(hour=0, minute=0, second=0, microsecond=0)
     return monday if is_business_day(monday, cal) else next_business_day(monday, cal)
 
 

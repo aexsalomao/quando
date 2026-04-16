@@ -1,12 +1,12 @@
-from datetime import datetime, date, timezone, timedelta
+from datetime import date, datetime, timedelta, timezone
 
 UTC = timezone.utc
 
 DateLike = str | datetime | date | int | float
 _WEST_EPOCH = date(1899, 12, 30)
 # Excel serials for 1970-01-01 through ~2100-12-31
-_WEST_MIN = 25569   # 1970-01-01
-_WEST_MAX = 73050   # 2099-12-31
+_WEST_MIN = 25569  # 1970-01-01
+_WEST_MAX = 73050  # 2099-12-31
 
 _FORMATS = [
     "%Y%m%d",

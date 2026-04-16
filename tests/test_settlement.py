@@ -1,8 +1,11 @@
 """
 Tests for to_settlement_date, to_cob, next_expiry, days_to_expiry.
 """
+
 from datetime import date, datetime
+
 import pytest
+
 import quando as q
 
 
@@ -78,8 +81,12 @@ class TestToCob:
 
     def test_result_is_always_business_day(self):
         test_dates = [
-            "2024-01-13", "2024-01-14", "2024-01-15",
-            "2024-03-29", "2024-06-19", "2024-07-04",
+            "2024-01-13",
+            "2024-01-14",
+            "2024-01-15",
+            "2024-03-29",
+            "2024-06-19",
+            "2024-07-04",
             "2024-12-25",
         ]
         for d in test_dates:
@@ -94,40 +101,49 @@ class TestToCob:
 
 class TestNextExpiry:
     # Monthly (third Friday of each month)
-    @pytest.mark.parametrize("trade_date, expected_expiry", [
-        ("2024-01-01", date(2024, 1, 19)),   # before Jan expiry
-        ("2024-01-19", date(2024, 2, 16)),   # ON Jan expiry → next is Feb
-        ("2024-01-20", date(2024, 2, 16)),   # after Jan expiry
-        ("2024-11-15", date(2024, 12, 20)),  # Nov expiry day → Dec
-        ("2024-12-20", date(2025, 1, 17)),   # Dec expiry → Jan next year
-        ("2024-12-31", date(2025, 1, 17)),   # end of year
-    ])
+    @pytest.mark.parametrize(
+        "trade_date, expected_expiry",
+        [
+            ("2024-01-01", date(2024, 1, 19)),  # before Jan expiry
+            ("2024-01-19", date(2024, 2, 16)),  # ON Jan expiry → next is Feb
+            ("2024-01-20", date(2024, 2, 16)),  # after Jan expiry
+            ("2024-11-15", date(2024, 12, 20)),  # Nov expiry day → Dec
+            ("2024-12-20", date(2025, 1, 17)),  # Dec expiry → Jan next year
+            ("2024-12-31", date(2025, 1, 17)),  # end of year
+        ],
+    )
     def test_monthly_expiry(self, trade_date, expected_expiry):
         result = q.next_expiry(trade_date, "monthly")
         assert result.date() == expected_expiry
 
     # Quarterly (third Friday of Mar, Jun, Sep, Dec)
-    @pytest.mark.parametrize("trade_date, expected_expiry", [
-        ("2024-01-01", date(2024, 3, 15)),   # Q1 expiry
-        ("2024-03-15", date(2024, 6, 21)),   # ON Q1 expiry → Q2
-        ("2024-03-16", date(2024, 6, 21)),   # after Q1 expiry
-        ("2024-06-21", date(2024, 9, 20)),   # ON Q2 → Q3
-        ("2024-09-20", date(2024, 12, 20)),  # ON Q3 → Q4
-        ("2024-12-20", date(2025, 3, 21)),   # ON Q4 → next year Q1
-    ])
+    @pytest.mark.parametrize(
+        "trade_date, expected_expiry",
+        [
+            ("2024-01-01", date(2024, 3, 15)),  # Q1 expiry
+            ("2024-03-15", date(2024, 6, 21)),  # ON Q1 expiry → Q2
+            ("2024-03-16", date(2024, 6, 21)),  # after Q1 expiry
+            ("2024-06-21", date(2024, 9, 20)),  # ON Q2 → Q3
+            ("2024-09-20", date(2024, 12, 20)),  # ON Q3 → Q4
+            ("2024-12-20", date(2025, 3, 21)),  # ON Q4 → next year Q1
+        ],
+    )
     def test_quarterly_expiry(self, trade_date, expected_expiry):
         result = q.next_expiry(trade_date, "quarterly")
         assert result.date() == expected_expiry
 
     # Weekly (every Friday)
-    @pytest.mark.parametrize("trade_date, expected_expiry", [
-        ("2024-01-01", date(2024, 1, 5)),   # Mon → Fri same week
-        ("2024-01-05", date(2024, 1, 12)),  # ON Fri → next Fri
-        ("2024-01-06", date(2024, 1, 12)),  # Sat → next Fri
-        ("2024-01-07", date(2024, 1, 12)),  # Sun → next Fri
-        ("2024-01-11", date(2024, 1, 12)),  # Thu → next day (Fri)
-        ("2024-01-12", date(2024, 1, 19)),  # ON Fri → next Fri
-    ])
+    @pytest.mark.parametrize(
+        "trade_date, expected_expiry",
+        [
+            ("2024-01-01", date(2024, 1, 5)),  # Mon → Fri same week
+            ("2024-01-05", date(2024, 1, 12)),  # ON Fri → next Fri
+            ("2024-01-06", date(2024, 1, 12)),  # Sat → next Fri
+            ("2024-01-07", date(2024, 1, 12)),  # Sun → next Fri
+            ("2024-01-11", date(2024, 1, 12)),  # Thu → next day (Fri)
+            ("2024-01-12", date(2024, 1, 19)),  # ON Fri → next Fri
+        ],
+    )
     def test_weekly_expiry(self, trade_date, expected_expiry):
         result = q.next_expiry(trade_date, "weekly")
         assert result.date() == expected_expiry

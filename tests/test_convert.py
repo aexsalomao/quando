@@ -3,8 +3,11 @@ Tests for all conversion functions:
 to_timestamp, to_datetime, to_west, to_iso, convert, to_timestamps, to_datetimes.
 Every function is tested against all auto-detected input types.
 """
-from datetime import datetime, date, timezone
+
+from datetime import date, datetime, timezone
+
 import pytest
+
 import quando as q
 
 UTC = timezone.utc
@@ -13,27 +16,31 @@ UTC = timezone.utc
 _DATE = date(2024, 1, 15)
 _DT_NAIVE = datetime(2024, 1, 15)
 _DT_AWARE = datetime(2024, 1, 15, tzinfo=UTC)
-_UNIX = 1705276800        # int epoch
-_UNIX_F = 1705276800.0    # float epoch
-_WEST = 45306             # Excel serial
+_UNIX = 1705276800  # int epoch
+_UNIX_F = 1705276800.0  # float epoch
+_WEST = 45306  # Excel serial
 _ISO_STR = "2024-01-15T00:00:00+00:00"
 _WEST_STR = "45306"
 
-ALL_INPUTS = pytest.mark.parametrize("value", [
-    "2024-01-15",
-    "20240115",
-    "01/15/2024",
-    _DT_NAIVE,
-    _DT_AWARE,
-    _DATE,
-    _UNIX,
-    _UNIX_F,
-    _WEST,
-    _WEST_STR,
-])
+ALL_INPUTS = pytest.mark.parametrize(
+    "value",
+    [
+        "2024-01-15",
+        "20240115",
+        "01/15/2024",
+        _DT_NAIVE,
+        _DT_AWARE,
+        _DATE,
+        _UNIX,
+        _UNIX_F,
+        _WEST,
+        _WEST_STR,
+    ],
+)
 
 
 # ── to_timestamp ─────────────────────────────────────────────────────────────
+
 
 class TestToTimestamp:
     @ALL_INPUTS
@@ -57,6 +64,7 @@ class TestToTimestamp:
 
 # ── to_datetime ───────────────────────────────────────────────────────────────
 
+
 class TestToDatetime:
     @ALL_INPUTS
     def test_all_input_types(self, value):
@@ -77,12 +85,14 @@ class TestToDatetime:
 
     def test_aware_input_preserves_tz(self):
         from zoneinfo import ZoneInfo
+
         dt_eastern = datetime(2024, 1, 15, 9, 30, tzinfo=ZoneInfo("America/New_York"))
         result = q.to_datetime(dt_eastern)
         assert result.date() == date(2024, 1, 15)
 
 
 # ── to_west ───────────────────────────────────────────────────────────────────
+
 
 class TestToWest:
     @ALL_INPUTS
@@ -94,7 +104,7 @@ class TestToWest:
 
     def test_known_anchor_dates(self):
         # Excel epoch is 1899-12-30; serial 1 = 1899-12-31
-        assert q.to_west("1900-01-01") == 2    # known Excel serial
+        assert q.to_west("1900-01-01") == 2  # known Excel serial
         assert q.to_west("2000-01-01") == 36526
         assert q.to_west("2024-01-15") == 45306
 
@@ -114,6 +124,7 @@ class TestToWest:
 
 
 # ── to_iso ────────────────────────────────────────────────────────────────────
+
 
 class TestToIso:
     @ALL_INPUTS
@@ -137,6 +148,7 @@ class TestToIso:
 
 
 # ── convert ───────────────────────────────────────────────────────────────────
+
 
 class TestConvert:
     def test_timestamp_format(self):
@@ -166,6 +178,7 @@ class TestConvert:
 
 
 # ── batch conversions ─────────────────────────────────────────────────────────
+
 
 class TestBatchConversions:
     _values = ["2024-01-15", "2024-01-16", "2024-01-17"]

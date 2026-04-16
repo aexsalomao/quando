@@ -1,10 +1,15 @@
-from quando._parse import parse, DateLike
-from quando._state import get_cal
 from quando._calendar import is_holiday_date
+from quando._parse import DateLike, parse
+from quando._state import get_cal
 
 _WEEKDAY_NAMES = [
-    "Monday", "Tuesday", "Wednesday", "Thursday",
-    "Friday", "Saturday", "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
 ]
 
 
@@ -27,7 +32,7 @@ def is_business_day(value: DateLike, cal: str | None = None) -> bool:
 def is_expiry_day(value: DateLike) -> bool:
     """True if date is the third Friday of its month (standard monthly expiry)."""
     d = parse(value).date()
-    if d.weekday() != 4:          # not a Friday
+    if d.weekday() != 4:  # not a Friday
         return False
     offset = (4 - d.replace(day=1).weekday()) % 7
     return d.day == 1 + offset + 14

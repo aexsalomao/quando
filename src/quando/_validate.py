@@ -1,10 +1,10 @@
-from quando._parse import parse, DateLike
+from quando._parse import DateLike, parse
 
 
 def is_valid(value: object) -> bool:
     """Return True if quando can parse the input."""
     try:
-        parse(value)
+        parse(value)  # type: ignore[arg-type]
         return True
     except (TypeError, ValueError):
         return False

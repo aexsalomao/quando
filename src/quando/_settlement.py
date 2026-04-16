@@ -1,9 +1,9 @@
-from datetime import datetime, timedelta, timezone
 import re
+from datetime import datetime, timedelta, timezone
 
-from quando._parse import parse, DateLike
-from quando._navigate import add_business_days, prev_business_day
 from quando._checks import is_business_day
+from quando._navigate import add_business_days, prev_business_day
+from quando._parse import DateLike, parse
 from quando._ranges import business_days_between
 
 
@@ -14,9 +14,7 @@ def to_settlement_date(value: DateLike, convention: str, cal: str | None = None)
     """
     m = re.fullmatch(r"[Tt]\+(\d+)", convention.strip())
     if not m:
-        raise ValueError(
-            f"quando: invalid convention '{convention}'. Expected 'T+N' (e.g. 'T+2')."
-        )
+        raise ValueError(f"quando: invalid convention '{convention}'. Expected 'T+N' (e.g. 'T+2').")
     return add_business_days(parse(value), int(m.group(1)), cal)
 
 
@@ -43,8 +41,7 @@ def next_expiry(value: DateLike, contract_type: str) -> datetime:
     if ct == "quarterly":
         return _next_quarterly_expiry(dt)
     raise ValueError(
-        f"quando: unknown contract_type '{contract_type}'. "
-        "Use 'monthly', 'quarterly', or 'weekly'."
+        f"quando: unknown contract_type '{contract_type}'. Use 'monthly', 'quarterly', or 'weekly'."
     )
 
 
@@ -55,6 +52,7 @@ def days_to_expiry(value: DateLike, expiry: DateLike, cal: str | None = None) ->
 
 # ── internal helpers ──────────────────────────────────────────────────────────
 
+
 def _next_weekday_after(dt: datetime, weekday: int) -> datetime:
     """Strictly next occurrence of weekday (0=Mon, 4=Fri) after dt."""
     days = (weekday - dt.weekday()) % 7 or 7
@@ -64,8 +62,9 @@ def _next_weekday_after(dt: datetime, weekday: int) -> datetime:
 
 def _third_friday(year: int, month: int) -> datetime:
     from datetime import date
+
     first = date(year, month, 1)
-    offset = (4 - first.weekday()) % 7   # days to first Friday
+    offset = (4 - first.weekday()) % 7  # days to first Friday
     return datetime(year, month, 1 + offset + 14, tzinfo=timezone.utc)
 
 

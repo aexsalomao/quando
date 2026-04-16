@@ -1,7 +1,10 @@
 """Tests for shift_tz, localize, strip_tz."""
+
 from datetime import datetime, timezone
-from zoneinfo import ZoneInfo
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+
 import pytest
+
 import quando as q
 
 UTC = timezone.utc
@@ -27,7 +30,7 @@ class TestShiftTz:
         # 2024-01-15 12:00 UTC -> different hours in different zones
         base = datetime(2024, 1, 15, 12, 0, tzinfo=UTC)
         eastern = q.shift_tz(base, "America/New_York")
-        berlin  = q.shift_tz(base, "Europe/Berlin")
+        berlin = q.shift_tz(base, "Europe/Berlin")
         assert eastern.hour != berlin.hour
 
     def test_accepts_all_input_types(self):
@@ -36,7 +39,7 @@ class TestShiftTz:
             assert result.tzinfo is not None
 
     def test_invalid_tz_raises(self):
-        with pytest.raises(Exception):
+        with pytest.raises(ZoneInfoNotFoundError):
             q.shift_tz("2024-01-15", "Not/Real_Tz")
 
 
@@ -51,7 +54,7 @@ class TestLocalize:
     def test_different_from_shift_tz(self):
         # shift_tz converts existing UTC time to a new zone
         # localize stamps the tz label onto the naive time directly
-        shifted   = q.shift_tz("2024-01-15", "America/New_York")
+        shifted = q.shift_tz("2024-01-15", "America/New_York")
         localized = q.localize("2024-01-15", "America/New_York")
         # Localized midnight NY != shifted midnight UTC (which is 19:00 NY)
         assert shifted != localized
@@ -66,7 +69,7 @@ class TestLocalize:
     def test_dst_aware_localize(self):
         # June is EDT (UTC-4), January is EST (UTC-5)
         june = q.localize("2024-06-15", "America/New_York")
-        jan  = q.localize("2024-01-15", "America/New_York")
+        jan = q.localize("2024-01-15", "America/New_York")
         # UTC offsets should differ
         assert june.utcoffset() != jan.utcoffset()
 
@@ -81,7 +84,7 @@ class TestStripTz:
         # 2024-01-15 01:00 Berlin == 2024-01-15 00:00 UTC
         dt_berlin = datetime(2024, 1, 15, 1, 0, tzinfo=ZoneInfo("Europe/Berlin"))
         result = q.strip_tz(dt_berlin)
-        assert result.hour == 0   # stripped to UTC midnight
+        assert result.hour == 0  # stripped to UTC midnight
         assert result.tzinfo is None
 
     def test_naive_utc_input_passes_through(self):

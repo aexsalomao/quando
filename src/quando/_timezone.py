@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 
-from quando._parse import parse, DateLike
+from quando._parse import DateLike, parse
 
 
 def shift_tz(value: DateLike, tz: str) -> datetime:

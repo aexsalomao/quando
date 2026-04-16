@@ -1,8 +1,8 @@
 """Tests for list_holidays, add_holiday, remove_holiday."""
+
 from datetime import date
-import pytest
+
 import quando as q
-import quando._calendar as _cal
 
 
 class TestListHolidays:
@@ -28,10 +28,10 @@ class TestListHolidays:
         holidays = q.list_holidays(2024, cal="NYSE")
         holiday_dates = {d for d, _ in holidays}
         expected = {
-            date(2024, 1, 1),   # New Year's Day
+            date(2024, 1, 1),  # New Year's Day
             date(2024, 1, 15),  # MLK Day
-            date(2024, 7, 4),   # Independence Day
-            date(2024, 12, 25), # Christmas
+            date(2024, 7, 4),  # Independence Day
+            date(2024, 12, 25),  # Christmas
         }
         assert expected.issubset(holiday_dates)
 
@@ -47,7 +47,7 @@ class TestListHolidays:
         q.use("NYSE")
         holidays = q.list_holidays(2024)
         holiday_dates = {d for d, _ in holidays}
-        assert date(2024, 1, 15) in holiday_dates    # MLK Day
+        assert date(2024, 1, 15) in holiday_dates  # MLK Day
 
     def test_eurex_differs_from_nyse(self):
         nyse = {d for d, _ in q.list_holidays(2024, cal="NYSE")}
@@ -85,6 +85,7 @@ class TestAddHoliday:
 
     def test_accepts_various_input_formats(self):
         from datetime import datetime
+
         q.add_holiday(datetime(2024, 4, 10), "Custom A", cal="NYSE")
         q.add_holiday(date(2024, 4, 11), "Custom B", cal="NYSE")
         assert q.is_holiday("2024-04-10", cal="NYSE") is True
@@ -125,7 +126,7 @@ class TestRemoveHoliday:
 
     def test_remove_nonexistent_date_does_not_raise(self):
         # Removing a date that was never a holiday shouldn't crash
-        q.remove_holiday("2024-03-20", cal="NYSE")   # normal trading day
+        q.remove_holiday("2024-03-20", cal="NYSE")  # normal trading day
 
     def test_add_then_remove_cycle(self):
         q.add_holiday("2024-04-10", "Temp Holiday", cal="NYSE")

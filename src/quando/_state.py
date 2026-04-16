@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime
 
-from quando._parse import parse, DateLike
+from quando._parse import DateLike, parse
 
 _logger = logging.getLogger("quando")
 _handler = logging.StreamHandler()
@@ -15,25 +15,25 @@ _CAL_SET: bool = False
 
 # User-facing name -> exchange_calendars exchange code
 CAL_ALIAS: dict[str, str] = {
-    "NYSE":  "XNYS",
+    "NYSE": "XNYS",
     "EUREX": "XEUR",
-    "LSE":   "XLON",
-    "TSX":   "XTSE",
-    "ASX":   "XASX",
-    "HKEX":  "XHKG",
-    "JPX":   "XTKS",
-    "CME":   "XCME",
+    "LSE": "XLON",
+    "TSX": "XTSE",
+    "ASX": "XASX",
+    "HKEX": "XHKG",
+    "JPX": "XTKS",
+    "CME": "XCME",
 }
 
 CAL_TZ: dict[str, str] = {
-    "NYSE":  "America/New_York",
+    "NYSE": "America/New_York",
     "EUREX": "Europe/Berlin",
-    "LSE":   "Europe/London",
-    "TSX":   "America/Toronto",
-    "ASX":   "Australia/Sydney",
-    "HKEX":  "Asia/Hong_Kong",
-    "JPX":   "Asia/Tokyo",
-    "CME":   "America/Chicago",
+    "LSE": "Europe/London",
+    "TSX": "America/Toronto",
+    "ASX": "Australia/Sydney",
+    "HKEX": "Asia/Hong_Kong",
+    "JPX": "Asia/Tokyo",
+    "CME": "America/Chicago",
 }
 
 

@@ -2,8 +2,11 @@
 Tests for next_business_day, prev_business_day, add_business_days, snap.
 All results are verified against the 2024 NYSE holiday schedule.
 """
+
 from datetime import date, datetime, timezone
+
 import pytest
+
 import quando as q
 
 UTC = timezone.utc

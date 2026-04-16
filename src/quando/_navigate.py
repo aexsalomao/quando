@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
-from quando._parse import parse, DateLike
 from quando._checks import is_business_day
+from quando._parse import DateLike, parse
 
 
 def next_business_day(value: DateLike, cal: str | None = None) -> datetime:
@@ -49,6 +49,5 @@ def snap(value: DateLike, direction: str, cal: str | None = None) -> datetime:
         bwd = prev_business_day(dt, cal)
         return bwd if (dt - bwd).days <= (fwd - dt).days else fwd
     raise ValueError(
-        f"quando: unknown direction '{direction}'. "
-        "Use 'forward', 'backward', or 'nearest'."
+        f"quando: unknown direction '{direction}'. Use 'forward', 'backward', or 'nearest'."
     )

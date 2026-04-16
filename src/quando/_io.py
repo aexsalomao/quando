@@ -1,7 +1,7 @@
 import json
 
-from quando._state import use, get_cal
-from quando._calendar import add_holiday, _CUSTOM_ADD
+from quando._calendar import _CUSTOM_ADD, add_holiday
+from quando._state import get_cal, use
 
 
 def load_calendar(path: str) -> None:
@@ -31,10 +31,7 @@ def save_calendar(path: str, cal: str | None = None) -> None:
     custom = _CUSTOM_ADD.get(cal_name, {})
     data = {
         "name": cal_name,
-        "holidays": [
-            {"date": d.isoformat(), "name": name}
-            for d, name in sorted(custom.items())
-        ],
+        "holidays": [{"date": d.isoformat(), "name": name} for d, name in sorted(custom.items())],
     }
     with open(path, "w") as f:
         json.dump(data, f, indent=2)

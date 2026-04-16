@@ -2,16 +2,18 @@
 
 Time translation & holiday tracking for backtesting pipelines.
 
-- **Python:** 3.10+ | **Build:** hatchling | **License:** MIT
-- **Core deps:** `exchange-calendars>=4.0`, `python-dateutil>=2.8`, `pytz>=2023.3`
-- **Dev deps:** `pytest>=7.0`, `pytest-cov`
+- **Python:** 3.10+ | **Build:** uv_build | **License:** MIT
+- **Core deps:** `exchange-calendars>=4.0`
+- **Dev deps:** `pytest>=8.0`, `pytest-cov`, `ruff`, `mypy`, `pre-commit`, `mkdocs`, `mkdocs-material`
 
 ## Setup & Tests
 
 ```bash
-pip install -e ".[dev]"
-pytest
-pytest --cov=quando  # with coverage
+uv sync --extra dev
+uv run pytest
+uv run pytest --cov=quando  # with coverage
+uv run ruff check .
+uv run mypy src/
 ```
 
 ## Usage

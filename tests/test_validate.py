@@ -1,36 +1,45 @@
 """Tests for is_valid, is_same_day, is_before, is_after."""
-from datetime import datetime, date, timezone
+
+from datetime import date, datetime, timezone
+
 import pytest
+
 import quando as q
 
 UTC = timezone.utc
 
 
 class TestIsValid:
-    @pytest.mark.parametrize("value", [
-        "2024-01-15",
-        "20240115",
-        "01/15/2024",
-        datetime(2024, 1, 15),
-        datetime(2024, 1, 15, tzinfo=UTC),
-        date(2024, 1, 15),
-        1705276800,
-        1705276800.0,
-        45306,          # Excel serial
-        "45306",        # Excel serial as string
-    ])
+    @pytest.mark.parametrize(
+        "value",
+        [
+            "2024-01-15",
+            "20240115",
+            "01/15/2024",
+            datetime(2024, 1, 15),
+            datetime(2024, 1, 15, tzinfo=UTC),
+            date(2024, 1, 15),
+            1705276800,
+            1705276800.0,
+            45306,  # Excel serial
+            "45306",  # Excel serial as string
+        ],
+    )
     def test_valid_inputs(self, value):
         assert q.is_valid(value) is True
 
-    @pytest.mark.parametrize("value", [
-        "not-a-date",
-        "99/99/9999",
-        "hello",
-        None,
-        [],
-        {},
-        object(),
-    ])
+    @pytest.mark.parametrize(
+        "value",
+        [
+            "not-a-date",
+            "99/99/9999",
+            "hello",
+            None,
+            [],
+            {},
+            object(),
+        ],
+    )
     def test_invalid_inputs(self, value):
         assert q.is_valid(value) is False
 
@@ -50,8 +59,8 @@ class TestIsSameDay:
         assert q.is_same_day("2024-01-15", "01/15/2024") is True
         assert q.is_same_day("2024-01-15", datetime(2024, 1, 15)) is True
         assert q.is_same_day("2024-01-15", date(2024, 1, 15)) is True
-        assert q.is_same_day("2024-01-15", 1705276800) is True    # Unix
-        assert q.is_same_day("2024-01-15", 45306) is True          # West serial
+        assert q.is_same_day("2024-01-15", 1705276800) is True  # Unix
+        assert q.is_same_day("2024-01-15", 45306) is True  # West serial
 
     def test_cross_format_same_day(self):
         assert q.is_same_day(1705276800, 45306) is True
@@ -78,7 +87,7 @@ class TestIsBefore:
         assert q.is_before("2024-01-15", "2024-01-15") is False
 
     def test_cross_format(self):
-        assert q.is_before("2024-01-15", 1705363200) is True   # Jan 16 epoch
+        assert q.is_before("2024-01-15", 1705363200) is True  # Jan 16 epoch
 
     def test_cross_year(self):
         assert q.is_before("2023-12-31", "2024-01-01") is True
@@ -98,7 +107,7 @@ class TestIsAfter:
         assert q.is_after("2024-01-15", "2024-01-15") is False
 
     def test_cross_format(self):
-        assert q.is_after(1705363200, "2024-01-15") is True   # Jan 16 > Jan 15
+        assert q.is_after(1705363200, "2024-01-15") is True  # Jan 16 > Jan 15
 
     def test_consistency_with_is_before(self):
         a, b = "2024-03-01", "2024-06-01"

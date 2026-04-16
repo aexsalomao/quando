@@ -6,10 +6,12 @@ indirectly by every public function but never tested in isolation.
 Covering _parse directly protects against regressions if _FORMATS is
 reordered, new input types are added, or boundary constants change.
 """
-from datetime import datetime, date, timezone, timedelta
+
+from datetime import date, datetime, timezone
+
 import pytest
 
-from quando._parse import parse, _parse_string, _WEST_MIN, _WEST_MAX, _WEST_EPOCH
+from quando._parse import _WEST_MAX, _WEST_MIN, _parse_string, parse
 
 UTC = timezone.utc
 
@@ -19,6 +21,7 @@ _ANCHOR_DT = datetime(2024, 1, 15, tzinfo=UTC)
 
 
 # ── Input type dispatch ───────────────────────────────────────────────────────
+
 
 class TestParseInputTypes:
     def test_aware_datetime_returned_unchanged(self):
@@ -44,15 +47,13 @@ class TestParseInputTypes:
 
     def test_int_below_west_min_parsed_as_unix(self):
         # _WEST_MIN - 1 is below the range, so it must be treated as Unix
-        unix = int((_WEST_EPOCH + timedelta(days=_WEST_MIN - 1) -
-                    date(1970, 1, 1)).total_seconds())
         # Just verify it doesn't raise and returns a datetime
         result = parse(_WEST_MIN - 1)
         assert isinstance(result, datetime)
         assert result.tzinfo is not None
 
     def test_int_above_west_max_parsed_as_unix(self):
-        ts = 1_800_000_000   # 2027, well above _WEST_MAX
+        ts = 1_800_000_000  # 2027, well above _WEST_MAX
         result = parse(ts)
         assert isinstance(result, datetime)
         assert result.year == 2027
@@ -87,6 +88,7 @@ class TestParseInputTypes:
 
 # ── West serial boundary ──────────────────────────────────────────────────────
 
+
 class TestWestSerialBoundary:
     def test_west_min_is_1970_01_01(self):
         result = parse(_WEST_MIN)
@@ -110,6 +112,7 @@ class TestWestSerialBoundary:
 
 
 # ── Format strings ────────────────────────────────────────────────────────────
+
 
 class TestFormatStrings:
     """Each format in _FORMATS gets at least one test."""
@@ -171,6 +174,7 @@ class TestFormatStrings:
 
 # ── %m/%d/%Y vs %d/%m/%Y ordering ────────────────────────────────────────────
 
+
 class TestSlashFormatOrdering:
     """
     _FORMATS tries %m/%d/%Y before %d/%m/%Y.
@@ -194,6 +198,7 @@ class TestSlashFormatOrdering:
 
 
 # ── fromisoformat fallback ────────────────────────────────────────────────────
+
 
 class TestFromisoformatFallback:
     """Strings with timezone offsets (e.g. +00:00) fall through to fromisoformat."""

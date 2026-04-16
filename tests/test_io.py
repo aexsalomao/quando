@@ -1,11 +1,12 @@
 """Tests for load_calendar and save_calendar."""
+
 import json
-import os
-from datetime import date
+
 import pytest
+
 import quando as q
-import quando._state as _state
 import quando._calendar as _cal
+import quando._state as _state
 
 
 @pytest.fixture
@@ -96,11 +97,15 @@ class TestLoadCalendar:
 
     def test_multiple_holidays_loaded(self, tmp_path):
         path = str(tmp_path / "cal.json")
-        self._write_cal(path, "MY_CAL", [
-            ("2024-04-10", "Day A"),
-            ("2024-05-15", "Day B"),
-            ("2024-08-20", "Day C"),
-        ])
+        self._write_cal(
+            path,
+            "MY_CAL",
+            [
+                ("2024-04-10", "Day A"),
+                ("2024-05-15", "Day B"),
+                ("2024-08-20", "Day C"),
+            ],
+        )
         q.load_calendar(path)
         assert q.is_holiday("2024-04-10", cal="MY_CAL") is True
         assert q.is_holiday("2024-05-15", cal="MY_CAL") is True

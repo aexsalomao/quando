@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from quando._parse import parse, _WEST_EPOCH, DateLike
+from quando._parse import _WEST_EPOCH, DateLike, parse
 
 
 def to_timestamp(value: DateLike) -> float:
@@ -26,16 +26,15 @@ def convert(value: DateLike, to_fmt: str) -> float | datetime | int | str:
     fmt = to_fmt.lower()
     dispatch = {
         "timestamp": to_timestamp,
-        "datetime":  to_datetime,
-        "west":      to_west,
-        "iso":       to_iso,
+        "datetime": to_datetime,
+        "west": to_west,
+        "iso": to_iso,
     }
     if fmt not in dispatch:
         raise ValueError(
-            f"quando: unknown format '{to_fmt}'. "
-            "Use 'timestamp', 'datetime', 'west', or 'iso'."
+            f"quando: unknown format '{to_fmt}'. Use 'timestamp', 'datetime', 'west', or 'iso'."
         )
-    return dispatch[fmt](value)
+    return dispatch[fmt](value)  # type: ignore[return-value]
 
 
 def to_timestamps(values: list[DateLike]) -> list[float]:

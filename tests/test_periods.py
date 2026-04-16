@@ -2,8 +2,9 @@
 Tests for period boundary functions.
 All expected values verified against 2024 NYSE calendar.
 """
+
 from datetime import date
-import pytest
+
 import quando as q
 
 
@@ -73,7 +74,7 @@ class TestEndOfMonth:
         for month in range(1, 13):
             val = f"2024-{month:02d}-15"
             start = q.start_of_month(val, cal="NYSE")
-            end   = q.end_of_month(val, cal="NYSE")
+            end = q.end_of_month(val, cal="NYSE")
             assert end.date() > start.date()
 
 
@@ -139,7 +140,7 @@ class TestEndOfQuarter:
         for month in range(1, 13):
             val = f"2024-{month:02d}-15"
             start = q.start_of_quarter(val, cal="NYSE")
-            end   = q.end_of_quarter(val, cal="NYSE")
+            end = q.end_of_quarter(val, cal="NYSE")
             assert end.date() > start.date()
 
 
@@ -176,7 +177,7 @@ class TestEndOfYear:
 
     def test_end_after_start(self):
         start = q.start_of_year("2024-06-15", cal="NYSE")
-        end   = q.end_of_year("2024-06-15", cal="NYSE")
+        end = q.end_of_year("2024-06-15", cal="NYSE")
         assert end.date() > start.date()
 
 
@@ -212,7 +213,7 @@ class TestEndOfWeek:
 
     def test_end_after_start(self):
         start = q.start_of_week("2024-01-17", cal="NYSE")
-        end   = q.end_of_week("2024-01-17", cal="NYSE")
+        end = q.end_of_week("2024-01-17", cal="NYSE")
         assert end.date() >= start.date()
 
 

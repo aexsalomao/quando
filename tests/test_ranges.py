@@ -2,8 +2,9 @@
 Tests for business_days_between, date_range, trading_days_in_month,
 trading_days_in_year, filter_business_days.
 """
+
 from datetime import date, datetime
-import pytest
+
 import quando as q
 
 
@@ -69,9 +70,9 @@ class TestDateRange:
         # Jan 15 (MLK) should not appear in range Jan 12 – Jan 16
         result = q.date_range("2024-01-12", "2024-01-16", cal="NYSE")
         dates = [r.date() for r in result]
-        assert date(2024, 1, 15) not in dates   # MLK
-        assert date(2024, 1, 13) not in dates   # Sat
-        assert date(2024, 1, 14) not in dates   # Sun
+        assert date(2024, 1, 15) not in dates  # MLK
+        assert date(2024, 1, 13) not in dates  # Sat
+        assert date(2024, 1, 14) not in dates  # Sun
         assert date(2024, 1, 12) in dates
         assert date(2024, 1, 16) in dates
 
@@ -116,14 +117,14 @@ class TestTradingDaysInMonth:
 
     def test_result_lte_total_weekdays(self):
         import calendar
+
         for month in range(1, 13):
             val = f"2024-{month:02d}-15"
             trading = q.trading_days_in_month(val, cal="NYSE")
             # Count weekdays in month
             days_in_month = calendar.monthrange(2024, month)[1]
             weekdays = sum(
-                1 for d in range(1, days_in_month + 1)
-                if date(2024, month, d).weekday() < 5
+                1 for d in range(1, days_in_month + 1) if date(2024, month, d).weekday() < 5
             )
             assert trading <= weekdays
 
@@ -145,8 +146,7 @@ class TestTradingDaysInYear:
     def test_consistent_with_sum_of_months(self):
         year_total = q.trading_days_in_year(2024, cal="NYSE")
         month_sum = sum(
-            q.trading_days_in_month(f"2024-{m:02d}-01", cal="NYSE")
-            for m in range(1, 13)
+            q.trading_days_in_month(f"2024-{m:02d}-01", cal="NYSE") for m in range(1, 13)
         )
         assert year_total == month_sum
 
@@ -156,16 +156,16 @@ class TestFilterBusinessDays:
         values = ["2024-01-13", "2024-01-14", "2024-01-15", "2024-01-16"]
         result = q.filter_business_days(values, cal="NYSE")
         result_dates = [q.to_datetime(r).date() for r in result]
-        assert date(2024, 1, 13) not in result_dates   # Sat
-        assert date(2024, 1, 14) not in result_dates   # Sun
-        assert date(2024, 1, 15) not in result_dates   # MLK
+        assert date(2024, 1, 13) not in result_dates  # Sat
+        assert date(2024, 1, 14) not in result_dates  # Sun
+        assert date(2024, 1, 15) not in result_dates  # MLK
         assert date(2024, 1, 16) in result_dates
 
     def test_removes_holidays(self):
         values = ["2024-01-01", "2024-01-02"]
         result = q.filter_business_days(values, cal="NYSE")
         result_dates = [q.to_datetime(r).date() for r in result]
-        assert date(2024, 1, 1) not in result_dates    # New Year
+        assert date(2024, 1, 1) not in result_dates  # New Year
         assert date(2024, 1, 2) in result_dates
 
     def test_empty_list(self):

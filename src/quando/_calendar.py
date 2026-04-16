@@ -1,16 +1,17 @@
 """
 Holiday calendar management: exchange_calendars data + custom overrides.
 """
+
 from datetime import date
 from functools import lru_cache
 
-from quando._parse import parse, DateLike
+from quando._parse import DateLike, parse
 from quando._state import get_cal, get_xcal_name
 
 # {cal_name: {date: holiday_name}}
-_CUSTOM_ADD: dict = {}
+_CUSTOM_ADD: dict[str, dict[date, str]] = {}
 # {cal_name: set[date]}
-_CUSTOM_REMOVE: dict = {}
+_CUSTOM_REMOVE: dict[str, set[date]] = {}
 
 
 def _norm(cal: str | None = None) -> str:
@@ -26,9 +27,10 @@ def _xcal_holidays(xcal_name: str, year: int) -> tuple[tuple[date, str], ...]:
     try:
         import exchange_calendars as xcals
         import pandas as pd
+
         xc = xcals.get_calendar(xcal_name)
         start = pd.Timestamp(f"{year}-01-01")
-        end   = pd.Timestamp(f"{year}-12-31")
+        end = pd.Timestamp(f"{year}-12-31")
         series = xc.regular_holidays.holidays(start=start, end=end, return_name=True)
         result = {ts.date(): name for ts, name in series.items()}
         for ts in getattr(xc, "adhoc_holidays", []):
@@ -61,6 +63,7 @@ def is_holiday_date(d: date, cal_name: str) -> bool:
 
 
 # ── public API ────────────────────────────────────────────────────────────────
+
 
 def list_holidays(year: int, cal: str | None = None) -> list[tuple[date, str]]:
     """Return [(date, name), ...] sorted by date."""
