@@ -1,6 +1,8 @@
 from datetime import datetime, date, timezone, timedelta
 
 UTC = timezone.utc
+
+DateLike = str | datetime | date | int | float
 _WEST_EPOCH = date(1899, 12, 30)
 # Excel serials for 1970-01-01 through ~2100-12-31
 _WEST_MIN = 25569   # 1970-01-01
@@ -18,7 +20,7 @@ _FORMATS = [
 ]
 
 
-def parse(value) -> datetime:
+def parse(value: DateLike) -> datetime:
     """Normalise any date-like input to a UTC-aware datetime."""
     if isinstance(value, datetime):
         return value if value.tzinfo else value.replace(tzinfo=UTC)

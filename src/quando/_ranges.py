@@ -1,11 +1,11 @@
 from datetime import datetime, timedelta, timezone
 import calendar as _cal_mod
 
-from quando._parse import parse
+from quando._parse import parse, DateLike
 from quando._checks import is_business_day
 
 
-def business_days_between(start, end, cal=None) -> int:
+def business_days_between(start: DateLike, end: DateLike, cal: str | None = None) -> int:
     """Count business days strictly between start and end (exclusive)."""
     s, e = parse(start), parse(end)
     if s >= e:
@@ -19,7 +19,7 @@ def business_days_between(start, end, cal=None) -> int:
     return count
 
 
-def date_range(start, end, cal=None) -> list:
+def date_range(start: DateLike, end: DateLike, cal: str | None = None) -> list[datetime]:
     """All business days between start and end, inclusive."""
     s, e = parse(start), parse(end)
     result, cur = [], s
@@ -30,7 +30,7 @@ def date_range(start, end, cal=None) -> list:
     return result
 
 
-def trading_days_in_month(value, cal=None) -> int:
+def trading_days_in_month(value: DateLike, cal: str | None = None) -> int:
     dt = parse(value)
     days_in_month = _cal_mod.monthrange(dt.year, dt.month)[1]
     return sum(
@@ -40,7 +40,7 @@ def trading_days_in_month(value, cal=None) -> int:
     )
 
 
-def trading_days_in_year(year: int, cal=None) -> int:
+def trading_days_in_year(year: int, cal: str | None = None) -> int:
     cur = datetime(year, 1, 1, tzinfo=timezone.utc)
     end = datetime(year, 12, 31, tzinfo=timezone.utc)
     count = 0
@@ -51,5 +51,5 @@ def trading_days_in_year(year: int, cal=None) -> int:
     return count
 
 
-def filter_business_days(values, cal=None) -> list:
+def filter_business_days(values: list[DateLike], cal: str | None = None) -> list[DateLike]:
     return [v for v in values if is_business_day(parse(v), cal)]

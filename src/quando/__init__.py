@@ -75,7 +75,7 @@ from quando._settlement import (
 from quando._io import load_calendar, save_calendar
 
 
-def today(cal=None) -> datetime:
+def today(cal: str | None = None) -> datetime:
     """Today as a timezone-aware datetime in the active calendar's exchange timezone."""
     tz = ZoneInfo(get_tz(cal))
     now = datetime.now(tz=tz)

@@ -22,7 +22,7 @@ def load_calendar(path: str) -> None:
         add_holiday(entry["date"], entry.get("name", "Holiday"), cal=cal_name)
 
 
-def save_calendar(path: str, cal=None) -> None:
+def save_calendar(path: str, cal: str | None = None) -> None:
     """
     Export custom holiday additions for the active (or specified) calendar to JSON.
     Exchange-provided holidays are not written — they are always available at runtime.

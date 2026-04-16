@@ -4,7 +4,7 @@ Holiday calendar management: exchange_calendars data + custom overrides.
 from datetime import date
 from functools import lru_cache
 
-from quando._parse import parse
+from quando._parse import parse, DateLike
 from quando._state import get_cal, get_xcal_name
 
 # {cal_name: {date: holiday_name}}
@@ -13,12 +13,12 @@ _CUSTOM_ADD: dict = {}
 _CUSTOM_REMOVE: dict = {}
 
 
-def _norm(cal=None) -> str:
+def _norm(cal: str | None = None) -> str:
     return get_cal(cal)
 
 
 @lru_cache(maxsize=256)
-def _xcal_holidays(xcal_name: str, year: int) -> tuple:
+def _xcal_holidays(xcal_name: str, year: int) -> tuple[tuple[date, str], ...]:
     """
     Fetch named holidays from exchange_calendars for a year.
     Returns a tuple of (date, name) pairs (hashable for lru_cache).
@@ -40,12 +40,12 @@ def _xcal_holidays(xcal_name: str, year: int) -> tuple:
         return ()
 
 
-def _base_holidays(cal_name: str, year: int) -> dict:
+def _base_holidays(cal_name: str, year: int) -> dict[date, str]:
     xcal_name = get_xcal_name(cal_name)
     return dict(_xcal_holidays(xcal_name, year))
 
 
-def get_holidays_for_year(cal_name: str, year: int) -> dict:
+def get_holidays_for_year(cal_name: str, year: int) -> dict[date, str]:
     """Merged {date: name} for the year, respecting custom add/remove."""
     base = _base_holidays(cal_name, year)
     for d in _CUSTOM_REMOVE.get(cal_name, set()):
@@ -62,19 +62,19 @@ def is_holiday_date(d: date, cal_name: str) -> bool:
 
 # ── public API ────────────────────────────────────────────────────────────────
 
-def list_holidays(year: int, cal=None) -> list:
+def list_holidays(year: int, cal: str | None = None) -> list[tuple[date, str]]:
     """Return [(date, name), ...] sorted by date."""
     return sorted(get_holidays_for_year(_norm(cal), year).items())
 
 
-def add_holiday(value, name: str, cal=None) -> None:
+def add_holiday(value: DateLike, name: str, cal: str | None = None) -> None:
     cal_name = _norm(cal)
     d = parse(value).date()
     _CUSTOM_ADD.setdefault(cal_name, {})[d] = name
     _xcal_holidays.cache_clear()
 
 
-def remove_holiday(value, cal=None) -> None:
+def remove_holiday(value: DateLike, cal: str | None = None) -> None:
     cal_name = _norm(cal)
     d = parse(value).date()
     _CUSTOM_REMOVE.setdefault(cal_name, set()).add(d)

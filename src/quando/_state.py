@@ -1,6 +1,7 @@
 import logging
+from datetime import datetime
 
-from quando._parse import parse
+from quando._parse import parse, DateLike
 
 _logger = logging.getLogger("quando")
 _handler = logging.StreamHandler()
@@ -48,12 +49,12 @@ def verbose(flag: bool) -> None:
     _logger.setLevel(logging.DEBUG if flag else logging.WARNING)
 
 
-def as_of(value) -> None:
+def as_of(value: DateLike) -> None:
     global _AS_OF
     _AS_OF = parse(value)
 
 
-def get_cal(cal=None) -> str:
+def get_cal(cal: str | None = None) -> str:
     global _CAL_SET
     if cal is not None:
         return str(cal).upper()
@@ -63,16 +64,16 @@ def get_cal(cal=None) -> str:
     return _GLOBAL_CAL
 
 
-def get_tz(cal=None) -> str:
+def get_tz(cal: str | None = None) -> str:
     return CAL_TZ.get(get_cal(cal), "UTC")
 
 
-def get_xcal_name(cal=None) -> str:
+def get_xcal_name(cal: str | None = None) -> str:
     name = get_cal(cal)
     return CAL_ALIAS.get(name, name)
 
 
-def get_as_of():
+def get_as_of() -> datetime | None:
     return _AS_OF
 
 
