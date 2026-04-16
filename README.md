@@ -6,7 +6,6 @@
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Status](https://img.shields.io/badge/status-alpha-orange)
 [![CI](https://github.com/aexsalomao/quando/actions/workflows/ci.yml/badge.svg)](https://github.com/aexsalomao/quando/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/aexsalomao/quando/branch/master/graph/badge.svg)](https://codecov.io/gh/aexsalomao/quando)
 
 **quando** is a lightweight library for business day arithmetic and market calendar utilities. It auto-detects any date input, resolves holidays via [exchange-calendars](https://github.com/ryanking13/exchange-calendars), and provides 52 methods covering everything from date conversion to settlement dates and rebalancing triggers.
 
