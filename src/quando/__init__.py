@@ -7,8 +7,11 @@ quando — time translation & holiday tracking for backtesting pipelines
     q.to_datetime("2024-01-15")
     q.next_business_day("2024-12-24")
 """
+from datetime import datetime
 
-from quando._state import use, verbose, as_of
+import pytz
+
+from quando._state import use, verbose, as_of, get_tz
 
 from quando._convert import (
     to_timestamp,
@@ -54,6 +57,13 @@ from quando._periods import (
     end_of_month,
     start_of_quarter,
     end_of_quarter,
+    start_of_year,
+    end_of_year,
+    start_of_week,
+    end_of_week,
+    is_month_end,
+    is_quarter_end,
+    is_year_end,
 )
 
 from quando._settlement import (
@@ -66,11 +76,8 @@ from quando._settlement import (
 from quando._io import load_calendar, save_calendar
 
 
-def today(cal=None):
+def today(cal=None) -> datetime:
     """Today as a timezone-aware datetime in the active calendar's exchange timezone."""
-    from datetime import datetime
-    import pytz
-    from quando._state import get_tz
     tz = pytz.timezone(get_tz(cal))
     now = datetime.now(tz=tz)
     return now.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -96,7 +103,12 @@ __all__ = [
     "business_days_between", "date_range", "trading_days_in_month",
     "trading_days_in_year", "filter_business_days",
     # periods
-    "start_of_month", "end_of_month", "start_of_quarter", "end_of_quarter",
+    "start_of_month", "end_of_month",
+    "start_of_quarter", "end_of_quarter",
+    "start_of_year", "end_of_year",
+    "start_of_week", "end_of_week",
+    # period boundary checks
+    "is_month_end", "is_quarter_end", "is_year_end",
     # settlement & expiry
     "to_settlement_date", "to_cob", "next_expiry", "days_to_expiry",
     # reference

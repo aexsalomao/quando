@@ -1,5 +1,7 @@
 import logging
 
+from quando._parse import parse
+
 _logger = logging.getLogger("quando")
 _handler = logging.StreamHandler()
 _logger.addHandler(_handler)
@@ -47,7 +49,6 @@ def verbose(flag: bool) -> None:
 
 
 def as_of(value) -> None:
-    from quando._parse import parse
     global _AS_OF
     _AS_OF = parse(value)
 

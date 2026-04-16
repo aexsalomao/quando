@@ -1,14 +1,17 @@
 from datetime import datetime, timedelta, timezone
 import re
 
+from quando._parse import parse
+from quando._navigate import add_business_days, prev_business_day
+from quando._checks import is_business_day
+from quando._ranges import business_days_between
+
 
 def to_settlement_date(value, convention: str, cal=None) -> datetime:
     """
     Given a trade date and a convention like 'T+2', return the settlement date
     by adding N business days.
     """
-    from quando._parse import parse
-    from quando._navigate import add_business_days
     m = re.fullmatch(r"[Tt]\+(\d+)", convention.strip())
     if not m:
         raise ValueError(
@@ -22,9 +25,6 @@ def to_cob(value, cal=None) -> datetime:
     Close-of-business date. Returns the date itself if it is a business day,
     otherwise rolls back to the previous business day.
     """
-    from quando._parse import parse
-    from quando._checks import is_business_day
-    from quando._navigate import prev_business_day
     dt = parse(value)
     return dt if is_business_day(dt, cal) else prev_business_day(dt, cal)
 
@@ -34,7 +34,6 @@ def next_expiry(value, contract_type: str) -> datetime:
     Next expiry date after value.
     contract_type: 'monthly' | 'quarterly' | 'weekly'
     """
-    from quando._parse import parse
     dt = parse(value)
     ct = contract_type.lower()
     if ct == "weekly":
@@ -51,7 +50,6 @@ def next_expiry(value, contract_type: str) -> datetime:
 
 def days_to_expiry(value, expiry, cal=None) -> int:
     """Business days between value and expiry."""
-    from quando._ranges import business_days_between
     return business_days_between(value, expiry, cal)
 
 

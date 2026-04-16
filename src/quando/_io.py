@@ -1,5 +1,8 @@
 import json
 
+from quando._state import use, get_cal
+from quando._calendar import add_holiday, _CUSTOM_ADD
+
 
 def load_calendar(path: str) -> None:
     """
@@ -11,8 +14,6 @@ def load_calendar(path: str) -> None:
         "holidays": [{"date": "YYYY-MM-DD", "name": "Holiday Name"}, ...]
     }
     """
-    from quando._state import use
-    from quando._calendar import add_holiday
     with open(path) as f:
         data = json.load(f)
     cal_name = data.get("name", "CUSTOM")
@@ -26,8 +27,6 @@ def save_calendar(path: str, cal=None) -> None:
     Export custom holiday additions for the active (or specified) calendar to JSON.
     Exchange-provided holidays are not written — they are always available at runtime.
     """
-    from quando._state import get_cal
-    from quando._calendar import _CUSTOM_ADD
     cal_name = get_cal(cal)
     custom = _CUSTOM_ADD.get(cal_name, {})
     data = {

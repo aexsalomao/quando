@@ -1,5 +1,5 @@
 """
-Tests for start_of_month, end_of_month, start_of_quarter, end_of_quarter.
+Tests for period boundary functions.
 All expected values verified against 2024 NYSE calendar.
 """
 from datetime import date
@@ -141,3 +141,112 @@ class TestEndOfQuarter:
             start = q.start_of_quarter(val, cal="NYSE")
             end   = q.end_of_quarter(val, cal="NYSE")
             assert end.date() > start.date()
+
+
+class TestStartOfYear:
+    def test_2024_starts_jan_2(self):
+        # Jan 1 is New Year's Day; first business day is Jan 2
+        assert q.start_of_year("2024-06-15", cal="NYSE").date() == date(2024, 1, 2)
+
+    def test_any_date_in_year_gives_same_result(self):
+        for month in (1, 6, 12):
+            result = q.start_of_year(f"2024-{month:02d}-15", cal="NYSE")
+            assert result.date() == date(2024, 1, 2)
+
+    def test_result_is_business_day(self):
+        for year in (2022, 2023, 2024, 2025):
+            result = q.start_of_year(f"{year}-06-15", cal="NYSE")
+            assert q.is_business_day(result, cal="NYSE") is True
+
+
+class TestEndOfYear:
+    def test_2024_ends_dec_31(self):
+        # Dec 31, 2024 is a Tuesday — business day
+        assert q.end_of_year("2024-06-15", cal="NYSE").date() == date(2024, 12, 31)
+
+    def test_any_date_in_year_gives_same_result(self):
+        for month in (1, 6, 12):
+            result = q.end_of_year(f"2024-{month:02d}-15", cal="NYSE")
+            assert result.date() == date(2024, 12, 31)
+
+    def test_result_is_business_day(self):
+        for year in (2022, 2023, 2024, 2025):
+            result = q.end_of_year(f"{year}-06-15", cal="NYSE")
+            assert q.is_business_day(result, cal="NYSE") is True
+
+    def test_end_after_start(self):
+        start = q.start_of_year("2024-06-15", cal="NYSE")
+        end   = q.end_of_year("2024-06-15", cal="NYSE")
+        assert end.date() > start.date()
+
+
+class TestStartOfWeek:
+    def test_wednesday_gives_monday(self):
+        # 2024-01-24 is Wednesday; Monday 2024-01-22 is a regular business day
+        assert q.start_of_week("2024-01-24", cal="NYSE").date() == date(2024, 1, 22)
+
+    def test_monday_returns_itself_if_business_day(self):
+        # 2024-01-22 is a regular Monday (no holiday)
+        assert q.start_of_week("2024-01-22", cal="NYSE").date() == date(2024, 1, 22)
+
+    def test_holiday_monday_rolls_forward(self):
+        # 2024-01-15 is MLK Day (NYSE closed); week of Jan 15 starts Jan 16 (Tue)
+        assert q.start_of_week("2024-01-15", cal="NYSE").date() == date(2024, 1, 16)
+
+    def test_result_is_business_day(self):
+        result = q.start_of_week("2024-01-24", cal="NYSE")
+        assert q.is_business_day(result, cal="NYSE") is True
+
+
+class TestEndOfWeek:
+    def test_wednesday_gives_friday(self):
+        # 2024-01-17 is Wednesday; Friday is 2024-01-19 (business day)
+        assert q.end_of_week("2024-01-17", cal="NYSE").date() == date(2024, 1, 19)
+
+    def test_friday_returns_itself_if_business_day(self):
+        assert q.end_of_week("2024-01-19", cal="NYSE").date() == date(2024, 1, 19)
+
+    def test_result_is_business_day(self):
+        result = q.end_of_week("2024-01-17", cal="NYSE")
+        assert q.is_business_day(result, cal="NYSE") is True
+
+    def test_end_after_start(self):
+        start = q.start_of_week("2024-01-17", cal="NYSE")
+        end   = q.end_of_week("2024-01-17", cal="NYSE")
+        assert end.date() >= start.date()
+
+
+class TestIsMonthEnd:
+    def test_last_bday_of_jan_2024_is_true(self):
+        assert q.is_month_end("2024-01-31", cal="NYSE") is True
+
+    def test_mid_month_is_false(self):
+        assert q.is_month_end("2024-01-15", cal="NYSE") is False
+
+    def test_non_last_bday_is_false(self):
+        assert q.is_month_end("2024-01-30", cal="NYSE") is False
+
+
+class TestIsQuarterEnd:
+    def test_q1_2024_end_mar_28(self):
+        assert q.is_quarter_end("2024-03-28", cal="NYSE") is True
+
+    def test_q4_2024_end_dec_31(self):
+        assert q.is_quarter_end("2024-12-31", cal="NYSE") is True
+
+    def test_mid_quarter_is_false(self):
+        assert q.is_quarter_end("2024-02-15", cal="NYSE") is False
+
+
+class TestIsYearEnd:
+    def test_dec_31_2024_is_true(self):
+        assert q.is_year_end("2024-12-31", cal="NYSE") is True
+
+    def test_mid_year_is_false(self):
+        assert q.is_year_end("2024-06-15", cal="NYSE") is False
+
+    def test_last_bday_that_is_not_dec_31_is_true(self):
+        # If Dec 31 is not a business day, the prev bday is year end
+        # 2022: Dec 31 is Saturday → year end is Dec 30 (Friday)
+        assert q.is_year_end("2022-12-30", cal="NYSE") is True
+        assert q.is_year_end("2022-12-31", cal="NYSE") is False

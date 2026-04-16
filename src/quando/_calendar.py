@@ -4,6 +4,9 @@ Holiday calendar management: exchange_calendars data + custom overrides.
 from datetime import date
 from functools import lru_cache
 
+from quando._parse import parse
+from quando._state import get_cal, get_xcal_name
+
 # {cal_name: {date: holiday_name}}
 _CUSTOM_ADD: dict = {}
 # {cal_name: set[date]}
@@ -11,7 +14,6 @@ _CUSTOM_REMOVE: dict = {}
 
 
 def _norm(cal=None) -> str:
-    from quando._state import get_cal
     return get_cal(cal)
 
 
@@ -39,7 +41,6 @@ def _xcal_holidays(xcal_name: str, year: int) -> tuple:
 
 
 def _base_holidays(cal_name: str, year: int) -> dict:
-    from quando._state import get_xcal_name
     xcal_name = get_xcal_name(cal_name)
     return dict(_xcal_holidays(xcal_name, year))
 
@@ -67,7 +68,6 @@ def list_holidays(year: int, cal=None) -> list:
 
 
 def add_holiday(value, name: str, cal=None) -> None:
-    from quando._parse import parse
     cal_name = _norm(cal)
     d = parse(value).date()
     _CUSTOM_ADD.setdefault(cal_name, {})[d] = name
@@ -75,7 +75,6 @@ def add_holiday(value, name: str, cal=None) -> None:
 
 
 def remove_holiday(value, cal=None) -> None:
-    from quando._parse import parse
     cal_name = _norm(cal)
     d = parse(value).date()
     _CUSTOM_REMOVE.setdefault(cal_name, set()).add(d)
