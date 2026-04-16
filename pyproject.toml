@@ -35,9 +35,11 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/aexsalomao/quando"
+Homepage = "https://aexsalomao.github.io/quando"
+Documentation = "https://aexsalomao.github.io/quando"
 Repository = "https://github.com/aexsalomao/quando"
 Issues = "https://github.com/aexsalomao/quando/issues"
+Changelog = "https://github.com/aexsalomao/quando/blob/master/CHANGELOG.md"
 
 [build-system]
 requires = ["uv_build>=0.11.6,<0.12.0"]

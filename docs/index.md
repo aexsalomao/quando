@@ -13,7 +13,8 @@ hide:
 [![PyPI](https://img.shields.io/pypi/v/quando?color=blue)](https://pypi.org/project/quando/)
 [![Python](https://img.shields.io/pypi/pyversions/quando)](https://pypi.org/project/quando/)
 [![License](https://img.shields.io/github/license/aexsalomao/quando)](https://github.com/aexsalomao/quando/blob/master/LICENSE)
-[![CI](https://github.com/aexsalomao/quando/actions/workflows/ci.yml/badge.svg)](https://github.com/aexsalomao/quando/actions)
+[![CI](https://github.com/aexsalomao/quando/actions/workflows/ci.yml/badge.svg)](https://github.com/aexsalomao/quando/actions/workflows/ci.yml)
+[![Docs](https://github.com/aexsalomao/quando/actions/workflows/docs.yml/badge.svg)](https://aexsalomao.github.io/quando/)
 
 ```bash
 pip install quando

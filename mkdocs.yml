@@ -3,6 +3,7 @@ site_description: Navigate trading calendars, business days, and market periods 
 site_url: https://aexsalomao.github.io/quando
 repo_url: https://github.com/aexsalomao/quando
 repo_name: aexsalomao/quando
+edit_uri: edit/master/docs/
 
 theme:
   name: material
@@ -25,6 +26,8 @@ theme:
     - navigation.tracking
     - navigation.sections
     - navigation.top
+    - navigation.footer
+    - content.action.edit
     - toc.follow
     - search.suggest
     - search.highlight
