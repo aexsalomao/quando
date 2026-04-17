@@ -2,11 +2,14 @@
 Holiday calendar management: exchange_calendars data + custom overrides.
 """
 
+import logging
 from datetime import date
 from functools import lru_cache
 
 from quando._parse import DateLike, parse
 from quando._state import get_cal, get_xcal_name
+
+logger = logging.getLogger(__name__)
 
 # {cal_name: {date: holiday_name}}
 _CUSTOM_ADD: dict[str, dict[date, str]] = {}
@@ -27,19 +30,30 @@ def _xcal_holidays(xcal_name: str, year: int) -> tuple[tuple[date, str], ...]:
     try:
         import exchange_calendars as xcals
         import pandas as pd
-
-        xc = xcals.get_calendar(xcal_name)
-        start = pd.Timestamp(f"{year}-01-01")
-        end = pd.Timestamp(f"{year}-12-31")
-        series = xc.regular_holidays.holidays(start=start, end=end, return_name=True)
-        result = {ts.date(): name for ts, name in series.items()}
-        for ts in getattr(xc, "adhoc_holidays", []):
-            d = pd.Timestamp(ts).date()
-            if start.date() <= d <= end.date() and d not in result:
-                result[d] = "Adhoc Holiday"
-        return tuple(sorted(result.items()))
-    except Exception:
+    except ImportError:
+        logger.warning(
+            "quando: exchange_calendars/pandas not installed — holiday data unavailable for %s",
+            xcal_name,
+        )
         return ()
+
+    try:
+        xc = xcals.get_calendar(xcal_name)
+    except Exception as exc:
+        # Unknown exchange code — xcals raises various error types; surface as warning
+        # rather than fail hard so downstream `is_business_day` still handles weekends.
+        logger.warning("quando: could not load calendar '%s': %s", xcal_name, exc)
+        return ()
+
+    start = pd.Timestamp(f"{year}-01-01")
+    end = pd.Timestamp(f"{year}-12-31")
+    series = xc.regular_holidays.holidays(start=start, end=end, return_name=True)
+    result = {ts.date(): name for ts, name in series.items()}
+    for ts in getattr(xc, "adhoc_holidays", []):
+        d = pd.Timestamp(ts).date()
+        if start.date() <= d <= end.date() and d not in result:
+            result[d] = "Adhoc Holiday"
+    return tuple(sorted(result.items()))
 
 
 def _base_holidays(cal_name: str, year: int) -> dict[date, str]:

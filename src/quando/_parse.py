@@ -1,3 +1,6 @@
+# Universal input parser: any date-like value → UTC-aware datetime.
+# Detection order: datetime → date → Excel/West serial → Unix epoch → str (8 formats + isoformat).
+
 from datetime import date, datetime, timedelta, timezone
 
 UTC = timezone.utc

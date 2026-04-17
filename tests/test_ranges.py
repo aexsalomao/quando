@@ -3,9 +3,19 @@ Tests for business_days_between, date_range, trading_days_in_month,
 trading_days_in_year, filter_business_days.
 """
 
+import calendar
 from datetime import date, datetime
 
+import pytest
+
 import quando as q
+
+MONTHS = list(range(1, 13))
+
+
+def _weekdays_in_2024_month(month: int) -> int:
+    days = calendar.monthrange(2024, month)[1]
+    return sum(1 for d in range(1, days + 1) if date(2024, month, d).weekday() < 5)
 
 
 class TestBusinessDaysBetween:
@@ -46,8 +56,8 @@ class TestBusinessDaysBetween:
         count = q.business_days_between("2024-01-16", "2024-01-19", cal="NYSE")
         assert count == 2
         # Both endpoints are business days, neither is counted
-        for d in ("2024-01-16", "2024-01-19"):
-            assert q.is_business_day(d, cal="NYSE")
+        assert q.is_business_day("2024-01-16", cal="NYSE")
+        assert q.is_business_day("2024-01-19", cal="NYSE")
 
 
 class TestDateRange:
@@ -57,8 +67,7 @@ class TestDateRange:
 
     def test_all_results_are_business_days(self):
         result = q.date_range("2024-01-10", "2024-01-31", cal="NYSE")
-        for dt in result:
-            assert q.is_business_day(dt, cal="NYSE") is True
+        assert all(q.is_business_day(dt, cal="NYSE") for dt in result)
 
     def test_includes_endpoints_when_business_days(self):
         result = q.date_range("2024-01-16", "2024-01-19", cal="NYSE")
@@ -110,23 +119,16 @@ class TestTradingDaysInMonth:
     def test_result_is_int(self):
         assert isinstance(q.trading_days_in_month("2024-01-15", cal="NYSE"), int)
 
-    def test_result_is_positive(self):
-        for month in range(1, 13):
-            val = f"2024-{month:02d}-15"
-            assert q.trading_days_in_month(val, cal="NYSE") > 0
+    @pytest.mark.parametrize("month", MONTHS)
+    def test_result_is_positive(self, month):
+        val = f"2024-{month:02d}-15"
+        assert q.trading_days_in_month(val, cal="NYSE") > 0
 
-    def test_result_lte_total_weekdays(self):
-        import calendar
-
-        for month in range(1, 13):
-            val = f"2024-{month:02d}-15"
-            trading = q.trading_days_in_month(val, cal="NYSE")
-            # Count weekdays in month
-            days_in_month = calendar.monthrange(2024, month)[1]
-            weekdays = sum(
-                1 for d in range(1, days_in_month + 1) if date(2024, month, d).weekday() < 5
-            )
-            assert trading <= weekdays
+    @pytest.mark.parametrize("month", MONTHS)
+    def test_result_lte_total_weekdays(self, month):
+        val = f"2024-{month:02d}-15"
+        trading = q.trading_days_in_month(val, cal="NYSE")
+        assert trading <= _weekdays_in_2024_month(month)
 
 
 class TestTradingDaysInYear:

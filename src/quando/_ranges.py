@@ -1,3 +1,5 @@
+# Business-day range operations: counting, listing, and per-month/year trading days.
+
 import calendar as _cal_mod
 from datetime import datetime, timedelta, timezone
 

@@ -12,12 +12,12 @@ class TestListHolidays:
         assert all(isinstance(h, tuple) and len(h) == 2 for h in holidays)
 
     def test_dates_are_date_objects(self):
-        for d, _ in q.list_holidays(2024, cal="NYSE"):
-            assert isinstance(d, date)
+        holidays = q.list_holidays(2024, cal="NYSE")
+        assert all(isinstance(d, date) for d, _ in holidays)
 
     def test_names_are_strings(self):
-        for _, name in q.list_holidays(2024, cal="NYSE"):
-            assert isinstance(name, str)
+        holidays = q.list_holidays(2024, cal="NYSE")
+        assert all(isinstance(name, str) for _, name in holidays)
 
     def test_sorted_by_date(self):
         holidays = q.list_holidays(2024, cal="NYSE")
@@ -36,12 +36,13 @@ class TestListHolidays:
         assert expected.issubset(holiday_dates)
 
     def test_all_holidays_are_in_requested_year(self):
-        for d, _ in q.list_holidays(2024, cal="NYSE"):
-            assert d.year == 2024
+        holidays = q.list_holidays(2024, cal="NYSE")
+        assert all(d.year == 2024 for d, _ in holidays)
 
     def test_no_weekends_in_list(self):
-        for d, _ in q.list_holidays(2024, cal="NYSE"):
-            assert d.weekday() < 5, f"{d} is a weekend"
+        holidays = q.list_holidays(2024, cal="NYSE")
+        weekends = [d for d, _ in holidays if d.weekday() >= 5]
+        assert weekends == []
 
     def test_uses_global_calendar(self):
         q.use("NYSE")

@@ -1,5 +1,8 @@
+# Settlement-date arithmetic and contract-expiry helpers.
+# Covers T+N settlement, close-of-business rolls, and monthly/quarterly/weekly expiries.
+
 import re
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 
 from quando._checks import is_business_day
 from quando._navigate import add_business_days, prev_business_day
@@ -61,8 +64,6 @@ def _next_weekday_after(dt: datetime, weekday: int) -> datetime:
 
 
 def _third_friday(year: int, month: int) -> datetime:
-    from datetime import date
-
     first = date(year, month, 1)
     offset = (4 - first.weekday()) % 7  # days to first Friday
     return datetime(year, month, 1 + offset + 14, tzinfo=timezone.utc)

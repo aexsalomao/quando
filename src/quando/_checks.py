@@ -1,3 +1,5 @@
+# Day-type predicates: weekend / holiday / business-day / expiry-day, plus day_of_week.
+
 from quando._calendar import is_holiday_date
 from quando._parse import DateLike, parse
 from quando._state import get_cal

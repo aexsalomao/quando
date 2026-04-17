@@ -6,6 +6,8 @@ Time translation & holiday tracking for backtesting pipelines.
 - **Core deps:** `exchange-calendars>=4.0`
 - **Dev deps:** `pytest>=8.0`, `pytest-cov`, `ruff`, `mypy`, `pre-commit`, `mkdocs`, `mkdocs-material`
 
+General coding and testing rules live in [`rules/code-style.md`](rules/code-style.md) and [`rules/testing.md`](rules/testing.md). This file covers quando-specific architecture and conventions only.
+
 ## Setup & Tests
 
 ```bash
@@ -47,7 +49,7 @@ src/quando/
     _io.py             # load_calendar(), save_calendar()
 tests/
     conftest.py        # autouse fixture: resets all global state between tests
-    test_*.py          # one module per source file
+    test_*.py
 ```
 
 ## Import Graph
@@ -217,11 +219,11 @@ Built-in aliases: `NYSE`, `EUREX`, `LSE`, `TSX`, `ASX`, `HKEX`, `JPX`, `CME`
 
 Any `exchange-calendars` exchange code also works (e.g. `"XLON"`, `"XEUR"`).
 
-## Code Style
+## Project-specific rules
 
-- **No lazy imports inside functions** — all imports at module top (no circular deps exist)
-- **All public functions accept `cal=None`** — falls back to global; pass explicitly to override
-- `_parse.py` and `_state.py` are the two roots of the import graph; keep them free of local imports
-- `exchange_calendars`/`pandas` stay lazy inside `_xcal_holidays` — they're heavy and optional at import time
-- Tests reset all global state via `conftest.py` autouse fixture
-- Test anchors use 2024 NYSE calendar (verified holidays)
+Augment (do not override) `rules/code-style.md` and `rules/testing.md`.
+
+- **No lazy imports inside functions** — all imports at module top (no circular deps exist). The one sanctioned exception is `exchange_calendars`/`pandas` inside `_xcal_holidays` — they're heavy and optional at import time.
+- `_parse.py` and `_state.py` are the two roots of the import graph; keep them free of local imports.
+- Test anchors use the 2024 NYSE calendar (verified holiday dates). Global state is reset between tests by the `conftest.py` autouse fixture — don't bypass it.
+- **Module-level globals in `_state.py` are a sanctioned design choice** (overrides the "no `global` / module-level mutable state" rule in `code-style.md`). The public API is pyplot-style — `q.use("NYSE")` sets an ambient calendar that every downstream function reads via `get_cal(cal=None)`. Passing a `Settings` object through every call would defeat the ergonomics this library exists to provide. The only legitimate touch-points are the setters (`use`, `verbose`, `as_of`), the read-only getters, and `conftest.py`'s reset fixture. Don't add new globals and don't read `_GLOBAL_CAL` directly from outside `_state`.

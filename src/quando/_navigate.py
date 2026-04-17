@@ -1,3 +1,5 @@
+# Business-day navigation: next/prev, add_business_days, snap to nearest/forward/backward.
+
 from datetime import datetime, timedelta
 
 from quando._checks import is_business_day

@@ -33,10 +33,14 @@ class TestShiftTz:
         berlin = q.shift_tz(base, "Europe/Berlin")
         assert eastern.hour != berlin.hour
 
-    def test_accepts_all_input_types(self):
-        for value in ("2024-06-15", datetime(2024, 6, 15, tzinfo=UTC), 1718409600):
-            result = q.shift_tz(value, "America/New_York")
-            assert result.tzinfo is not None
+    @pytest.mark.parametrize(
+        "value",
+        ["2024-06-15", datetime(2024, 6, 15, tzinfo=UTC), 1718409600],
+        ids=["str", "datetime", "unix"],
+    )
+    def test_accepts_all_input_types(self, value):
+        result = q.shift_tz(value, "America/New_York")
+        assert result.tzinfo is not None
 
     def test_invalid_tz_raises(self):
         with pytest.raises(ZoneInfoNotFoundError):

@@ -1,3 +1,6 @@
+# Period boundaries: start/end of month/quarter/year/week and is_*_end checks.
+# All results are business-day-snapped in the active calendar.
+
 import calendar as _cal_mod
 from datetime import datetime, timedelta, timezone
 

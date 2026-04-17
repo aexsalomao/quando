@@ -5,7 +5,14 @@ All expected values verified against 2024 NYSE calendar.
 
 from datetime import date
 
+import pytest
+
 import quando as q
+
+MONTHS = list(range(1, 13))
+MONTH_CORNERS = [1, 10, 15, 31]
+YEARS = [2022, 2023, 2024, 2025]
+QUARTER_ANCHORS = [1, 6, 12]
 
 
 class TestStartOfMonth:
@@ -13,11 +20,11 @@ class TestStartOfMonth:
         # Jan 1 is New Year's Day; first business day is Jan 2
         assert q.start_of_month("2024-01-15", cal="NYSE").date() == date(2024, 1, 2)
 
-    def test_accepts_any_day_in_month(self):
+    @pytest.mark.parametrize("day", MONTH_CORNERS)
+    def test_accepts_any_day_in_month(self, day):
         # Any date in January returns the same start
-        for day in (1, 10, 15, 31):
-            result = q.start_of_month(f"2024-01-{day:02d}", cal="NYSE")
-            assert result.date() == date(2024, 1, 2)
+        result = q.start_of_month(f"2024-01-{day:02d}", cal="NYSE")
+        assert result.date() == date(2024, 1, 2)
 
     def test_month_starting_on_business_day(self):
         # March 2024: Mar 1 is Friday (business day)
@@ -31,16 +38,15 @@ class TestStartOfMonth:
         # September 2024: Sep 1 is Sunday, Sep 2 is Labor Day → Sep 3
         assert q.start_of_month("2024-09-15", cal="NYSE").date() == date(2024, 9, 3)
 
-    def test_result_is_business_day(self):
-        for month in range(1, 13):
-            result = q.start_of_month(f"2024-{month:02d}-15", cal="NYSE")
-            assert q.is_business_day(result, cal="NYSE") is True
+    @pytest.mark.parametrize("month", MONTHS)
+    def test_result_is_business_day(self, month):
+        result = q.start_of_month(f"2024-{month:02d}-15", cal="NYSE")
+        assert q.is_business_day(result, cal="NYSE") is True
 
-    def test_result_is_in_same_month(self):
-        for month in range(1, 13):
-            val = f"2024-{month:02d}-15"
-            result = q.start_of_month(val, cal="NYSE")
-            assert result.date().month == month
+    @pytest.mark.parametrize("month", MONTHS)
+    def test_result_is_in_same_month(self, month):
+        result = q.start_of_month(f"2024-{month:02d}-15", cal="NYSE")
+        assert result.date().month == month
 
 
 class TestEndOfMonth:
@@ -48,10 +54,10 @@ class TestEndOfMonth:
         # Jan 31 is Wednesday, business day
         assert q.end_of_month("2024-01-15", cal="NYSE").date() == date(2024, 1, 31)
 
-    def test_accepts_any_day_in_month(self):
-        for day in (1, 10, 15, 31):
-            result = q.end_of_month(f"2024-01-{day:02d}", cal="NYSE")
-            assert result.date() == date(2024, 1, 31)
+    @pytest.mark.parametrize("day", MONTH_CORNERS)
+    def test_accepts_any_day_in_month(self, day):
+        result = q.end_of_month(f"2024-01-{day:02d}", cal="NYSE")
+        assert result.date() == date(2024, 1, 31)
 
     def test_month_ending_on_saturday(self):
         # August 2024: Aug 31 is Saturday → last bday is Aug 30 (Fri)
@@ -65,17 +71,17 @@ class TestEndOfMonth:
         # Dec 31 is Tuesday, business day
         assert q.end_of_month("2024-12-15", cal="NYSE").date() == date(2024, 12, 31)
 
-    def test_result_is_business_day(self):
-        for month in range(1, 13):
-            result = q.end_of_month(f"2024-{month:02d}-15", cal="NYSE")
-            assert q.is_business_day(result, cal="NYSE") is True
+    @pytest.mark.parametrize("month", MONTHS)
+    def test_result_is_business_day(self, month):
+        result = q.end_of_month(f"2024-{month:02d}-15", cal="NYSE")
+        assert q.is_business_day(result, cal="NYSE") is True
 
-    def test_end_after_start(self):
-        for month in range(1, 13):
-            val = f"2024-{month:02d}-15"
-            start = q.start_of_month(val, cal="NYSE")
-            end = q.end_of_month(val, cal="NYSE")
-            assert end.date() > start.date()
+    @pytest.mark.parametrize("month", MONTHS)
+    def test_end_after_start(self, month):
+        val = f"2024-{month:02d}-15"
+        start = q.start_of_month(val, cal="NYSE")
+        end = q.end_of_month(val, cal="NYSE")
+        assert end.date() > start.date()
 
 
 class TestStartOfQuarter:
@@ -102,10 +108,10 @@ class TestStartOfQuarter:
         start_jun = q.start_of_quarter("2024-06-30", cal="NYSE")
         assert start_apr.date() == start_may.date() == start_jun.date()
 
-    def test_result_is_business_day(self):
-        for month in range(1, 13):
-            result = q.start_of_quarter(f"2024-{month:02d}-15", cal="NYSE")
-            assert q.is_business_day(result, cal="NYSE") is True
+    @pytest.mark.parametrize("month", MONTHS)
+    def test_result_is_business_day(self, month):
+        result = q.start_of_quarter(f"2024-{month:02d}-15", cal="NYSE")
+        assert q.is_business_day(result, cal="NYSE") is True
 
 
 class TestEndOfQuarter:
@@ -131,17 +137,17 @@ class TestEndOfQuarter:
         end_dec = q.end_of_quarter("2024-12-31", cal="NYSE")
         assert end_oct.date() == end_nov.date() == end_dec.date()
 
-    def test_result_is_business_day(self):
-        for month in range(1, 13):
-            result = q.end_of_quarter(f"2024-{month:02d}-15", cal="NYSE")
-            assert q.is_business_day(result, cal="NYSE") is True
+    @pytest.mark.parametrize("month", MONTHS)
+    def test_result_is_business_day(self, month):
+        result = q.end_of_quarter(f"2024-{month:02d}-15", cal="NYSE")
+        assert q.is_business_day(result, cal="NYSE") is True
 
-    def test_end_after_start(self):
-        for month in range(1, 13):
-            val = f"2024-{month:02d}-15"
-            start = q.start_of_quarter(val, cal="NYSE")
-            end = q.end_of_quarter(val, cal="NYSE")
-            assert end.date() > start.date()
+    @pytest.mark.parametrize("month", MONTHS)
+    def test_end_after_start(self, month):
+        val = f"2024-{month:02d}-15"
+        start = q.start_of_quarter(val, cal="NYSE")
+        end = q.end_of_quarter(val, cal="NYSE")
+        assert end.date() > start.date()
 
 
 class TestStartOfYear:
@@ -149,15 +155,15 @@ class TestStartOfYear:
         # Jan 1 is New Year's Day; first business day is Jan 2
         assert q.start_of_year("2024-06-15", cal="NYSE").date() == date(2024, 1, 2)
 
-    def test_any_date_in_year_gives_same_result(self):
-        for month in (1, 6, 12):
-            result = q.start_of_year(f"2024-{month:02d}-15", cal="NYSE")
-            assert result.date() == date(2024, 1, 2)
+    @pytest.mark.parametrize("month", QUARTER_ANCHORS)
+    def test_any_date_in_year_gives_same_result(self, month):
+        result = q.start_of_year(f"2024-{month:02d}-15", cal="NYSE")
+        assert result.date() == date(2024, 1, 2)
 
-    def test_result_is_business_day(self):
-        for year in (2022, 2023, 2024, 2025):
-            result = q.start_of_year(f"{year}-06-15", cal="NYSE")
-            assert q.is_business_day(result, cal="NYSE") is True
+    @pytest.mark.parametrize("year", YEARS)
+    def test_result_is_business_day(self, year):
+        result = q.start_of_year(f"{year}-06-15", cal="NYSE")
+        assert q.is_business_day(result, cal="NYSE") is True
 
 
 class TestEndOfYear:
@@ -165,15 +171,15 @@ class TestEndOfYear:
         # Dec 31, 2024 is a Tuesday — business day
         assert q.end_of_year("2024-06-15", cal="NYSE").date() == date(2024, 12, 31)
 
-    def test_any_date_in_year_gives_same_result(self):
-        for month in (1, 6, 12):
-            result = q.end_of_year(f"2024-{month:02d}-15", cal="NYSE")
-            assert result.date() == date(2024, 12, 31)
+    @pytest.mark.parametrize("month", QUARTER_ANCHORS)
+    def test_any_date_in_year_gives_same_result(self, month):
+        result = q.end_of_year(f"2024-{month:02d}-15", cal="NYSE")
+        assert result.date() == date(2024, 12, 31)
 
-    def test_result_is_business_day(self):
-        for year in (2022, 2023, 2024, 2025):
-            result = q.end_of_year(f"{year}-06-15", cal="NYSE")
-            assert q.is_business_day(result, cal="NYSE") is True
+    @pytest.mark.parametrize("year", YEARS)
+    def test_result_is_business_day(self, year):
+        result = q.end_of_year(f"{year}-06-15", cal="NYSE")
+        assert q.is_business_day(result, cal="NYSE") is True
 
     def test_end_after_start(self):
         start = q.start_of_year("2024-06-15", cal="NYSE")

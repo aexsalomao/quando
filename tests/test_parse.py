@@ -66,24 +66,31 @@ class TestParseInputTypes:
         result = parse("2024-01-15")
         assert result.date() == _ANCHOR_DATE
 
-    def test_unsupported_type_raises_type_error(self):
-        for bad in ([], {}, object(), None):
-            with pytest.raises(TypeError, match="quando"):
-                parse(bad)
+    @pytest.mark.parametrize(
+        "bad",
+        [[], {}, object(), None],
+        ids=["list", "dict", "object", "none"],
+    )
+    def test_unsupported_type_raises_type_error(self, bad):
+        with pytest.raises(TypeError, match="quando"):
+            parse(bad)
 
-    def test_result_is_always_utc_aware(self):
-        inputs = [
+    @pytest.mark.parametrize(
+        "value",
+        [
             "2024-01-15",
             datetime(2024, 1, 15),
             date(2024, 1, 15),
             1705276800,
             1705276800.0,
             45306,
-        ]
-        for v in inputs:
-            result = parse(v)
-            assert result.tzinfo is not None, f"naive result for {v!r}"
-            assert result.utcoffset().total_seconds() == 0, f"non-UTC for {v!r}"
+        ],
+        ids=["str", "datetime", "date", "unix_int", "unix_float", "west"],
+    )
+    def test_result_is_always_utc_aware(self, value):
+        result = parse(value)
+        assert result.tzinfo is not None
+        assert result.utcoffset().total_seconds() == 0
 
 
 # ── West serial boundary ──────────────────────────────────────────────────────
@@ -156,8 +163,9 @@ class TestFormatStrings:
         assert result.date() == _ANCHOR_DATE
         assert result.microsecond == 123456
 
-    def test_all_format_results_are_utc_aware(self):
-        samples = [
+    @pytest.mark.parametrize(
+        "s",
+        [
             "20240115",
             "2024-01-15",
             "01/15/2024",
@@ -166,10 +174,11 @@ class TestFormatStrings:
             "2024-01-15T10:30:00Z",
             "2024-01-15 10:30:00",
             "2024-01-15T10:30:00.000001",
-        ]
-        for s in samples:
-            result = _parse_string(s)
-            assert result.tzinfo is not None, f"naive result for '{s}'"
+        ],
+    )
+    def test_all_format_results_are_utc_aware(self, s):
+        result = _parse_string(s)
+        assert result.tzinfo is not None
 
 
 # ── %m/%d/%Y vs %d/%m/%Y ordering ────────────────────────────────────────────

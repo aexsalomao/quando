@@ -43,11 +43,11 @@ class TestIsValid:
     def test_invalid_inputs(self, value):
         assert q.is_valid(value) is False
 
-    def test_does_not_raise(self):
+    @pytest.mark.parametrize("bad", ["xyz", None, [], object()], ids=["str", "none", "list", "obj"])
+    def test_does_not_raise(self, bad):
         # is_valid must never propagate exceptions
-        for bad in ("xyz", None, [], object()):
-            result = q.is_valid(bad)
-            assert isinstance(result, bool)
+        result = q.is_valid(bad)
+        assert isinstance(result, bool)
 
 
 class TestIsSameDay:

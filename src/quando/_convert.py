@@ -1,6 +1,12 @@
+# Output converters — datetime → timestamp / ISO string / Excel serial / datetime.
+# `convert()` is the stringly-dispatched universal form; prefer the typed helpers.
+
 from datetime import datetime
+from typing import Literal, overload
 
 from quando._parse import _WEST_EPOCH, DateLike, parse
+
+ConvertFmt = Literal["timestamp", "datetime", "west", "iso"]
 
 
 def to_timestamp(value: DateLike) -> float:
@@ -21,20 +27,28 @@ def to_iso(value: DateLike) -> str:
     return parse(value).isoformat()
 
 
+@overload
+def convert(value: DateLike, to_fmt: Literal["timestamp"]) -> float: ...
+@overload
+def convert(value: DateLike, to_fmt: Literal["datetime"]) -> datetime: ...
+@overload
+def convert(value: DateLike, to_fmt: Literal["west"]) -> int: ...
+@overload
+def convert(value: DateLike, to_fmt: Literal["iso"]) -> str: ...
 def convert(value: DateLike, to_fmt: str) -> float | datetime | int | str:
     """Universal converter. to_fmt: 'timestamp' | 'datetime' | 'west' | 'iso'."""
     fmt = to_fmt.lower()
-    dispatch = {
-        "timestamp": to_timestamp,
-        "datetime": to_datetime,
-        "west": to_west,
-        "iso": to_iso,
-    }
-    if fmt not in dispatch:
-        raise ValueError(
-            f"quando: unknown format '{to_fmt}'. Use 'timestamp', 'datetime', 'west', or 'iso'."
-        )
-    return dispatch[fmt](value)  # type: ignore[return-value]
+    if fmt == "timestamp":
+        return to_timestamp(value)
+    if fmt == "datetime":
+        return to_datetime(value)
+    if fmt == "west":
+        return to_west(value)
+    if fmt == "iso":
+        return to_iso(value)
+    raise ValueError(
+        f"quando: unknown format '{to_fmt}'. Use 'timestamp', 'datetime', 'west', or 'iso'."
+    )
 
 
 def to_timestamps(values: list[DateLike]) -> list[float]:

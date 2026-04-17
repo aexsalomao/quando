@@ -76,10 +76,6 @@ class TestIsWeekend:
         assert q.is_weekend(1705104000) is True
 
     def test_no_calendar_needed(self):
-        # Should work without q.use() ever being called
-        import quando._state as _state
-
-        _state._CAL_SET = False
         # Saturday — answer doesn't depend on calendar
         assert q.is_weekend("2024-01-13") is True
 
@@ -110,9 +106,13 @@ class TestIsHoliday:
         assert q.is_holiday("2024-03-29", cal="NYSE") is True
         assert q.is_holiday("2024-03-29", cal="EUREX") is True
 
-    def test_accepts_all_input_types(self):
-        for value in ("2024-01-01", datetime(2024, 1, 1), date(2024, 1, 1)):
-            assert q.is_holiday(value, cal="NYSE") is True
+    @pytest.mark.parametrize(
+        "value",
+        ["2024-01-01", datetime(2024, 1, 1), date(2024, 1, 1)],
+        ids=["str", "datetime", "date"],
+    )
+    def test_accepts_all_input_types(self, value):
+        assert q.is_holiday(value, cal="NYSE") is True
 
 
 class TestIsBusinessDay:
@@ -138,9 +138,13 @@ class TestIsBusinessDay:
         assert q.is_business_day("2024-01-15", cal="NYSE") is False
         assert q.is_business_day("2024-01-15", cal="EUREX") is True
 
-    def test_accepts_all_input_types(self):
-        for value in ("2024-01-02", datetime(2024, 1, 2), date(2024, 1, 2), 1704153600):
-            assert q.is_business_day(value, cal="NYSE") is True
+    @pytest.mark.parametrize(
+        "value",
+        ["2024-01-02", datetime(2024, 1, 2), date(2024, 1, 2), 1704153600],
+        ids=["str", "datetime", "date", "unix"],
+    )
+    def test_accepts_all_input_types(self, value):
+        assert q.is_business_day(value, cal="NYSE") is True
 
 
 class TestIsExpiryDay:

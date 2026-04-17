@@ -1,17 +1,17 @@
+# Global session state: active calendar, verbose flag, as-of date, and calendar lookups.
+# The module-level globals back the pyplot-style `q.use()` public API — see CLAUDE.md.
+
 import logging
 from datetime import datetime
 
 from quando._parse import DateLike, parse
 
-_logger = logging.getLogger("quando")
-_handler = logging.StreamHandler()
-_logger.addHandler(_handler)
-_logger.setLevel(logging.WARNING)
+logger = logging.getLogger(__name__)
 
-_GLOBAL_CAL: str = "NYSE"
+_DEFAULT_CAL = "NYSE"
+_GLOBAL_CAL: str = _DEFAULT_CAL
 _VERBOSE: bool = False
-_AS_OF = None
-_CAL_SET: bool = False
+_AS_OF: datetime | None = None
 
 # User-facing name -> exchange_calendars exchange code
 CAL_ALIAS: dict[str, str] = {
@@ -38,15 +38,14 @@ CAL_TZ: dict[str, str] = {
 
 
 def use(cal: str) -> None:
-    global _GLOBAL_CAL, _CAL_SET
+    global _GLOBAL_CAL
     _GLOBAL_CAL = cal.upper()
-    _CAL_SET = True
 
 
 def verbose(flag: bool) -> None:
     global _VERBOSE
     _VERBOSE = flag
-    _logger.setLevel(logging.DEBUG if flag else logging.WARNING)
+    logger.setLevel(logging.DEBUG if flag else logging.WARNING)
 
 
 def as_of(value: DateLike) -> None:
@@ -55,12 +54,8 @@ def as_of(value: DateLike) -> None:
 
 
 def get_cal(cal: str | None = None) -> str:
-    global _CAL_SET
     if cal is not None:
-        return str(cal).upper()
-    if not _CAL_SET:
-        _logger.info("quando: no calendar set via q.use(), defaulting to NYSE")
-        _CAL_SET = True
+        return cal.upper()
     return _GLOBAL_CAL
 
 
@@ -79,4 +74,4 @@ def get_as_of() -> datetime | None:
 
 def log(msg: str) -> None:
     if _VERBOSE:
-        _logger.debug(msg)
+        logger.debug(msg)

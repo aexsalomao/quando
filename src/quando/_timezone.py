@@ -1,3 +1,5 @@
+# Timezone operations: shift_tz (convert), localize (attach), strip_tz (drop).
+
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 

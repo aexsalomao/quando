@@ -15,11 +15,6 @@ class TestUse:
         q.use("eurex")
         assert _state._GLOBAL_CAL == "EUREX"
 
-    def test_sets_cal_set_flag(self):
-        _state._CAL_SET = False
-        q.use("NYSE")
-        assert _state._CAL_SET is True
-
     def test_subsequent_calls_override(self):
         q.use("NYSE")
         q.use("LSE")

@@ -41,10 +41,13 @@ class TestNextBusinessDay:
         result = q.next_business_day("2024-01-12", cal="NYSE")
         assert q.is_business_day(result, cal="NYSE") is True
 
-    def test_accepts_all_input_types(self):
-        expected = date(2024, 1, 16)
-        for value in ("2024-01-15", datetime(2024, 1, 15), date(2024, 1, 15)):
-            assert q.next_business_day(value, cal="NYSE").date() == expected
+    @pytest.mark.parametrize(
+        "value",
+        ["2024-01-15", datetime(2024, 1, 15), date(2024, 1, 15)],
+        ids=["str", "datetime", "date"],
+    )
+    def test_accepts_all_input_types(self, value):
+        assert q.next_business_day(value, cal="NYSE").date() == date(2024, 1, 16)
 
     def test_year_boundary(self):
         # Dec 31, 2024 (Tue) → Jan 2, 2025 (Thu, skipping Jan 1 holiday)
@@ -127,19 +130,17 @@ class TestAddBusinessDays:
         result = q.add_business_days("2024-01-02", 252, cal="NYSE")
         assert result.date().year == 2025
 
-    def test_result_is_always_business_day(self):
-        for n in range(-10, 11):
-            if n == 0:
-                continue
-            result = q.add_business_days("2024-01-15", n, cal="NYSE")
-            assert q.is_business_day(result, cal="NYSE") is True
+    @pytest.mark.parametrize("n", [*range(-10, 0), *range(1, 11)])
+    def test_result_is_always_business_day(self, n):
+        result = q.add_business_days("2024-01-15", n, cal="NYSE")
+        assert q.is_business_day(result, cal="NYSE") is True
 
-    def test_add_n_then_subtract_n_is_identity(self):
+    @pytest.mark.parametrize("n", [1, 5, 10, 20])
+    def test_add_n_then_subtract_n_is_identity(self, n):
         start = "2024-06-10"
-        for n in (1, 5, 10, 20):
-            forward = q.add_business_days(start, n, cal="NYSE")
-            back = q.add_business_days(forward, -n, cal="NYSE")
-            assert back.date() == date(2024, 6, 10)
+        forward = q.add_business_days(start, n, cal="NYSE")
+        back = q.add_business_days(forward, -n, cal="NYSE")
+        assert back.date() == date(2024, 6, 10)
 
 
 class TestSnap:
@@ -178,7 +179,7 @@ class TestSnap:
         with pytest.raises(ValueError, match="quando"):
             q.snap("2024-01-13", "sideways", cal="NYSE")
 
-    def test_result_is_always_business_day(self):
-        for direction in ("forward", "backward", "nearest"):
-            result = q.snap("2024-01-13", direction, cal="NYSE")
-            assert q.is_business_day(result, cal="NYSE") is True
+    @pytest.mark.parametrize("direction", ["forward", "backward", "nearest"])
+    def test_result_is_always_business_day(self, direction):
+        result = q.snap("2024-01-13", direction, cal="NYSE")
+        assert q.is_business_day(result, cal="NYSE") is True

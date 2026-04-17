@@ -49,10 +49,13 @@ class TestToSettlementDate:
         with pytest.raises(ValueError, match="quando"):
             q.to_settlement_date("2024-01-16", "+2", cal="NYSE")
 
-    def test_accepts_all_input_types(self):
-        expected = date(2024, 1, 18)
-        for value in ("2024-01-16", datetime(2024, 1, 16), date(2024, 1, 16)):
-            assert q.to_settlement_date(value, "T+2", cal="NYSE").date() == expected
+    @pytest.mark.parametrize(
+        "value",
+        ["2024-01-16", datetime(2024, 1, 16), date(2024, 1, 16)],
+        ids=["str", "datetime", "date"],
+    )
+    def test_accepts_all_input_types(self, value):
+        assert q.to_settlement_date(value, "T+2", cal="NYSE").date() == date(2024, 1, 18)
 
 
 class TestToCob:
@@ -79,8 +82,9 @@ class TestToCob:
         # Mar 29 (Good Friday) → Mar 28 (Thu)
         assert q.to_cob("2024-03-29", cal="NYSE").date() == date(2024, 3, 28)
 
-    def test_result_is_always_business_day(self):
-        test_dates = [
+    @pytest.mark.parametrize(
+        "d",
+        [
             "2024-01-13",
             "2024-01-14",
             "2024-01-15",
@@ -88,15 +92,19 @@ class TestToCob:
             "2024-06-19",
             "2024-07-04",
             "2024-12-25",
-        ]
-        for d in test_dates:
-            result = q.to_cob(d, cal="NYSE")
-            assert q.is_business_day(result, cal="NYSE") is True, f"Failed for {d}"
+        ],
+    )
+    def test_result_is_always_business_day(self, d):
+        result = q.to_cob(d, cal="NYSE")
+        assert q.is_business_day(result, cal="NYSE") is True
 
-    def test_accepts_all_input_types(self):
-        expected = date(2024, 1, 12)
-        for value in ("2024-01-13", datetime(2024, 1, 13), date(2024, 1, 13)):
-            assert q.to_cob(value, cal="NYSE").date() == expected
+    @pytest.mark.parametrize(
+        "value",
+        ["2024-01-13", datetime(2024, 1, 13), date(2024, 1, 13)],
+        ids=["str", "datetime", "date"],
+    )
+    def test_accepts_all_input_types(self, value):
+        assert q.to_cob(value, cal="NYSE").date() == date(2024, 1, 12)
 
 
 class TestNextExpiry:
@@ -148,19 +156,22 @@ class TestNextExpiry:
         result = q.next_expiry(trade_date, "weekly")
         assert result.date() == expected_expiry
 
-    def test_result_is_always_a_friday(self):
-        for contract in ("monthly", "quarterly", "weekly"):
-            result = q.next_expiry("2024-01-10", contract)
-            assert result.weekday() == 4, f"{contract} expiry {result.date()} is not a Friday"
+    @pytest.mark.parametrize("contract", ["monthly", "quarterly", "weekly"])
+    def test_result_is_always_a_friday(self, contract):
+        result = q.next_expiry("2024-01-10", contract)
+        assert result.weekday() == 4
 
     def test_invalid_contract_type_raises(self):
         with pytest.raises(ValueError, match="quando"):
             q.next_expiry("2024-01-10", "daily")
 
-    def test_accepts_all_input_types(self):
-        expected = date(2024, 1, 19)
-        for value in ("2024-01-10", datetime(2024, 1, 10), date(2024, 1, 10)):
-            assert q.next_expiry(value, "monthly").date() == expected
+    @pytest.mark.parametrize(
+        "value",
+        ["2024-01-10", datetime(2024, 1, 10), date(2024, 1, 10)],
+        ids=["str", "datetime", "date"],
+    )
+    def test_accepts_all_input_types(self, value):
+        assert q.next_expiry(value, "monthly").date() == date(2024, 1, 19)
 
 
 class TestDaysToExpiry:
@@ -189,7 +200,7 @@ class TestDaysToExpiry:
     def test_expiry_before_value_returns_zero(self):
         assert q.days_to_expiry("2024-01-19", "2024-01-10", cal="NYSE") == 0
 
-    def test_accepts_all_input_types(self):
-        for v in ("2024-01-16", datetime(2024, 1, 16), date(2024, 1, 16)):
-            for e in ("2024-01-19", datetime(2024, 1, 19), date(2024, 1, 19)):
-                assert q.days_to_expiry(v, e, cal="NYSE") == 2
+    @pytest.mark.parametrize("v", ["2024-01-16", datetime(2024, 1, 16), date(2024, 1, 16)])
+    @pytest.mark.parametrize("e", ["2024-01-19", datetime(2024, 1, 19), date(2024, 1, 19)])
+    def test_accepts_all_input_types(self, v, e):
+        assert q.days_to_expiry(v, e, cal="NYSE") == 2
