@@ -1,6 +1,6 @@
 [project]
 name = "quando"
-version = "0.2.0"
+version = "0.2.1"
 description = "Time translation & holiday tracking for backtesting pipelines"
 readme = "README.md"
 license = "MIT"
